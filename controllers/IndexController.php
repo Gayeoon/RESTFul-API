@@ -358,6 +358,32 @@ try {
             $res->message = "정보 출력 성공";
             echo json_encode($res, JSON_NUMERIC_CHECK);
             break;
+
+        /*
+        * API No. 14
+        * API Name : User 리뷰 목록 조회 API
+        * 마지막 수정 날짜 : 20.08.17
+        */
+        case "getUserReview":
+            http_response_code(200);
+
+            $keyword = $_GET['userId'];
+
+            if(!isValidId($keyword)){
+                $res->isSuccess = FALSE;
+                $res->code = 200;
+                $res->message = "유효하지 않은 ID입니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                break;
+            }
+
+            $res->result = getUserReview($keyword);
+            $res->isSuccess = TRUE;
+            $res->code = 100;
+            $res->message = "정보 출력 성공";
+            echo json_encode($res, JSON_NUMERIC_CHECK);
+            break;
+
         /*
          * API No. 0
          * API Name : 테스트 API
