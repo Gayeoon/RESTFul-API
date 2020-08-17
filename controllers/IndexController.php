@@ -399,8 +399,8 @@ try {
                 echo json_encode($res, JSON_NUMERIC_CHECK);
                 break;
             }
-            
-            createUser($req->UserId, $req->UserPw, $req->Name, $req->Phone, $req->Email, $req->Level, $req->MailReceiving, $req->SmsReceiving, $req->IsDeleted, $req->Latitude, $req->Longitude);
+
+            createUser($req->UserId, $req->UserPw, $req->Name, $req->Phone, $req->Email, $req->MailReceiving, $req->SmsReceiving, $req->IsDeleted, $req->Latitude, $req->Longitude);
             $res->isSuccess = TRUE;
             $res->code = 100;
             $res->message = "테스트 성공";

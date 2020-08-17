@@ -341,17 +341,17 @@ function getUserReview($keyword)
     return $res;
 }
 
-function createUser($UserId, $UserPw, $Name, $Phone, $Email, $Level, $MailReceiving, $SmsReceiving, $IsDeleted, $Latitude, $Longitude){
-        $pdo = pdoSqlConnect();
-        $query = "INSERT INTO User (UserId, UserPw, Name, Phone, Email, Level, MailReceiving, SmsReceiving, IsDeleted, Latitude, Longitude)
- VALUES (?,?,?,?,?,?,?,?,?,?,?);";
+function createUser($UserId, $UserPw, $Name, $Phone, $Email, $MailReceiving, $SmsReceiving, $IsDeleted, $Latitude, $Longitude){
+    $pdo = pdoSqlConnect();
+    $query = "INSERT INTO User (UserId, UserPw, Name, Phone, Email, Level, MailReceiving, SmsReceiving, IsDeleted, Latitude, Longitude)
+ VALUES (?,?,?,?,?,0,?,?,?,?,?);";
 
-        $st = $pdo->prepare($query);
-        $st->execute([$UserId, $UserPw, $Name, $Phone, $Email, $Level, $MailReceiving, $SmsReceiving, $IsDeleted, $Latitude, $Longitude]);
+    $st = $pdo->prepare($query);
+    $st->execute([$UserId, $UserPw, $Name, $Phone, $Email, $MailReceiving, $SmsReceiving, $IsDeleted, $Latitude, $Longitude]);
 
-        $st = null;
-        $pdo = null;
-    }
+    $st = null;
+    $pdo = null;
+}
 
 function isValidId($keyword)
 {
@@ -391,6 +391,23 @@ function isValidNumber($keyword)
 {
     $pdo = pdoSqlConnect();
     $query = "SELECT EXISTS (SELECT * FROM OrderMenu WHERE OrderNumber = ?) AS exist;";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$keyword]);
+    //    $st->execute();
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+    //echo json_encode($res);
+    return intval($res[0]['exist']);
+}
+
+function idCheck($keyword)
+{
+    $pdo = pdoSqlConnect();
+    $query = "SELECT EXISTS (SELECT * FROM User WHERE UserId = ?) AS exist;";
 
     $st = $pdo->prepare($query);
     $st->execute([$keyword]);
