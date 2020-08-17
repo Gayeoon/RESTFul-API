@@ -341,6 +341,20 @@ function getUserReview($keyword)
     return $res;
 }
 
+function createUser($UserId)
+{
+    $pdo = pdoSqlConnect();
+    $query = "INSERT INTO User (UserId)
+VALUES (?)";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$UserId]);
+
+    $st = null;
+    $pdo = null;
+
+}
+
 function isValidId($keyword)
 {
     $pdo = pdoSqlConnect();
@@ -444,20 +458,6 @@ function isValidNo($no)
     //echo json_encode($res);
     return intval($res[0]['exist']);
 }
-
-function createUser($name)
-{
-    $pdo = pdoSqlConnect();
-    $query = "INSERT INTO testTable (name) VALUES (?);";
-
-    $st = $pdo->prepare($query);
-    $st->execute([$name]);
-
-    $st = null;
-    $pdo = null;
-
-}
-
 
 function isValidUser($id, $pw){
     $pdo = pdoSqlConnect();

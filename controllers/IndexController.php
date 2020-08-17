@@ -385,6 +385,20 @@ try {
             break;
 
         /*
+        * API No. 15
+        * API Name :
+        * 마지막 수정 날짜 : 20.08.17
+        */
+        case "createUser":
+            http_response_code(200);
+            $res->result = createUser($req->UserId, UserPw, Name, Phone, Email, Level, MailReceiving, SmsReceiving, IsDeleted, Latitude, Longitude);
+            $res->isSuccess = TRUE;
+            $res->code = 100;
+            $res->message = "테스트 성공";
+            echo json_encode($res, JSON_NUMERIC_CHECK);
+            break;
+
+        /*
          * API No. 0
          * API Name : 테스트 API
          * 마지막 수정 날짜 : 19.04.29
@@ -425,19 +439,7 @@ try {
             echo json_encode($res, JSON_NUMERIC_CHECK);
             break;
 
-        /*
-         * API No. 0
-         * API Name : 테스트 Body & Insert API
-         * 마지막 수정 날짜 : 19.04.29
-         */
-        case "createUser":
-            http_response_code(200);
-            $res->result = createUser($req->name);
-            $res->isSuccess = TRUE;
-            $res->code = 100;
-            $res->message = "테스트 성공";
-            echo json_encode($res, JSON_NUMERIC_CHECK);
-            break;
+
     }
 } catch (\Exception $e) {
     return getSQLErrorException($errorLogs, $e, $req);
