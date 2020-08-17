@@ -257,7 +257,7 @@ function getUserOrderMenu($keyword)
 {
     $pdo = pdoSqlConnect();
 
-    $query = "SELECT Menu.Name, CONCAT(FORMAT(Menu.Price , 0), '원') AS MenuPrice, Menu.MenuOption, OrderMenuList.MenuCnt
+    $query = "SELECT Menu.Name, CONCAT(FORMAT(Menu.Price , 0), '원') AS MenuPrice, OrderMenuList.MenuOption, OrderMenuList.MenuCnt
         FROM OrderMenu
         JOIN User on User.UserId = ?
         JOIN  OrderMenuList
