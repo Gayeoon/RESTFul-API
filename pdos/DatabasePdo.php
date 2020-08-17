@@ -7,7 +7,7 @@ function pdoSqlConnect()
         $DB_HOST = "3.34.167.226";
         $DB_NAME = "schema_new";
         $DB_USER = "root";
-        $DB_PW = "Rk2733307";
+        $DB_PW = "secret";
         $pdo = new PDO("mysql:host=$DB_HOST;dbname=$DB_NAME", $DB_USER, $DB_PW);
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $pdo->exec("SET NAMES UTF8");
