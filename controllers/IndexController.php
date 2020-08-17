@@ -392,15 +392,50 @@ try {
         case "createUser":
             http_response_code(200);
 
-            if(idCheck($req->UserId)){
+            if($req->UserId == null) {
                 $res->isSuccess = FALSE;
-                $res->code = 200;
-                $res->message = "이미 존재하는 ID입니다.";
-                echo json_encode($res, JSON_NUMERIC_CHECK);
+                $res->code = 300;
+                $res->message = "아이디 값이 누락되었습니다.";
                 break;
             }
 
-            createUser($req->UserId, $req->UserPw, $req->Name, $req->Phone, $req->Email, $req->MailReceiving, $req->SmsReceiving, $req->IsDeleted, $req->Latitude, $req->Longitude);
+                if(idCheck($req->UserId)){
+                $res->isSuccess = FALSE;
+                $res->code = 200;
+                $res->message = "이미 존재하는 ID입니다.";
+                break;
+            }
+
+            if($req->UserPw == null){
+                $res->isSuccess = FALSE;
+                $res->code = 400;
+                $res->message = "비밀번호 값이 누락되었습니다.";
+                break;
+            }
+
+            if($req->Phone == null){
+                $res->isSuccess = FALSE;
+                $res->code = 500;
+                $res->message = "사용자 번호 값이 누락되었습니다.";
+                break;
+            }
+
+            if($req->Email == null){
+                $res->isSuccess = FALSE;
+                $res->code = 600;
+                $res->message = "이메일 값이 누락되었습니다.";
+                break;
+            }
+
+            if ($req->Name == null){
+                createUser($req->UserId, $req->UserPw, $req->UserId, $req->Phone, $req->Email, $req->MailReceiving, $req->SmsReceiving);
+                $res->isSuccess = TRUE;
+                $res->code = 100;
+                $res->message = "테스트 성공";
+                break;
+            }
+
+            createUser($req->UserId, $req->UserPw, $req->Name, $req->Phone, $req->Email, $req->MailReceiving, $req->SmsReceiving);
             $res->isSuccess = TRUE;
             $res->code = 100;
             $res->message = "테스트 성공";
