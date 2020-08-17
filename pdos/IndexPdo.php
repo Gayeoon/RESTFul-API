@@ -281,6 +281,26 @@ function getUserOrderMenu($keyword)
     return $res;
 }
 
+function getUserReviewCount($keyword)
+{
+    $pdo = pdoSqlConnect();
+
+    $query = "SELECT COUNT(*) AS MyReview
+        FROM Review
+        JOIN User on User.UserId = ?
+        WHERE Review.UserIdx = User.UserIdx;";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$keyword]);
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    return $res[0];
+}
+
 function isValidId($keyword)
 {
     $pdo = pdoSqlConnect();

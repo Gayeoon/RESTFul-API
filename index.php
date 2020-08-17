@@ -27,6 +27,7 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
     $r->addRoute('GET', '/user/order', ['IndexController', 'getUserOrder']);
     $r->addRoute('GET', '/user/orderDetail', ['IndexController', 'getUserOrderDetail']);
     $r->addRoute('GET', '/user/order/menu', ['IndexController', 'getUserOrderMenu']);
+    $r->addRoute('GET', '/user/review/count', ['IndexController', 'getUserReviewCount']);
 
     /* ******************   Test   ****************** */
     $r->addRoute('GET', '/', ['IndexController', 'index']);
