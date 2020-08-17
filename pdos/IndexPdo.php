@@ -1,539 +1,497 @@
 <?php
+require 'function.php';
 
-function getUserInfo($keyword)
-{
-    $pdo = pdoSqlConnect();
-    $query = "SELECT * FROM User WHERE UserId = ? AND IsDeleted = 'N';";
+const JWT_SECRET_KEY = "TEST_KEYTEST_KEYTEST_KEYTEST_KEYTEST_KEYTEST_KEYTEST_KEYTEST_KEYTEST_KEYTEST_KEYTEST_KEYTEST_KEYTEST_KEY";
 
-    $st = $pdo->prepare($query);
-    $st->execute([$keyword]);
-    $st->setFetchMode(PDO::FETCH_ASSOC);
-    $res = $st->fetchAll();
+$res = (Object)Array();
+header('Content-Type: json');
+$req = json_decode(file_get_contents("php://input"));
+try {
+ //   addAccessLogs($accessLogs, $req);
+    switch ($handler) {
+        case "index":
+            echo "API Server";
+            break;
+        case "ACCESS_LOGS":
+            //            header('content-type text/html charset=utf-8');
+            header('Content-Type: text/html; charset=UTF-8');
+            getLogs("./logs/access.log");
+            break;
+        case "ERROR_LOGS":
+            //            header('content-type text/html charset=utf-8');
+            header('Content-Type: text/html; charset=UTF-8');
+            getLogs("./logs/errors.log");
+            break;
+        /*
+         * API No. 1
+         * API Name : User 모든 정보 출력 API
+         * 마지막 수정 날짜 : 20.08.14
+         */
+        case "getUserInfo":
+            http_response_code(200);
 
-    $st = null;
-    $pdo = null;
+            $keyword = $_GET['userId'];
 
-    return $res;
-}
+            if(!isValidId($keyword)){
+                $res->isSuccess = FALSE;
+                $res->code = 200;
+                $res->message = "유효하지 않은 ID입니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                break;
+            }
 
-function getUser($keyword)
-{
-    $pdo = pdoSqlConnect();
-    $query = "SELECT User.Name, User.Level, COUNT(*) AS Coupon
-        FROM User
-        JOIN Coupon
-        ON User.UserIdx= Coupon.UserIdx AND Coupon.isUsed = 'N'
-        WHERE UserId = ? AND isDeleted = 'N'
-        GROUP BY User.UserIdx;";
+            $res->result = getUserInfo($keyword);
+            $res->isSuccess = TRUE;
+            $res->code = 100;
+            $res->message = "정보 출력 성공";
+            echo json_encode($res, JSON_NUMERIC_CHECK);
+            break;
 
-    $st = $pdo->prepare($query);
-    $st->execute([$keyword]);
-    $st->setFetchMode(PDO::FETCH_ASSOC);
-    $res = $st->fetchAll();
+        /*
+         * API No. 2
+         * API Name : MY배민 페이지의 User 정보 출력 API
+         * 마지막 수정 날짜 : 20.08.14
+         */
+        case "getUser":
+            http_response_code(200);
 
-    $st = null;
-    $pdo = null;
+            $keyword = $_GET['userId'];
 
-    return $res;
-}
+            if(!isValidId($keyword)){
+                $res->isSuccess = FALSE;
+                $res->code = 200;
+                $res->message = "유효하지 않은 ID입니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                break;
+            }
 
-function getUserPoint($keyword)
-{
-    $pdo = pdoSqlConnect();
+            $res->result = getUser($keyword);
+            $res->isSuccess = TRUE;
+            $res->code = 100;
+            $res->message = "정보 출력 성공";
+            echo json_encode($res, JSON_NUMERIC_CHECK);
+            break;
 
-    $query = "SELECT Point, date_format(Date,'%Y-%m-%d') AS Date , EndDate, Point.IsDeleted As Used, Store
-        FROM Point
-        JOIN User ON User.UserId = ? AND Point.UserIdx = User.UserIdx
-        ORDER BY Date DESC;
-        ";
+        /*
+         * API No. 3
+         * API Name : 포인트 이용 내역 조회 API
+         * 마지막 수정 날짜 : 20.08.14
+         */
+        case "getUserPoint":
+            http_response_code(200);
 
-    $st = $pdo->prepare($query);
-    $st->execute([$keyword]);
-    $st->setFetchMode(PDO::FETCH_ASSOC);
-    $res = $st->fetchAll();
+            $keyword = $_GET['userId'];
 
-    $st = null;
-    $pdo = null;
+            if(!isValidId($keyword)){
+                $res->isSuccess = FALSE;
+                $res->code = 200;
+                $res->message = "유효하지 않은 ID입니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                break;
+            }
 
-    for($i=0; $i<sizeof($res); $i++)
-    {
-        $res[$i] = array_filter($res[$i]);
+            $res->result = getUserPoint($keyword);
+            $res->isSuccess = TRUE;
+            $res->code = 100;
+            $res->message = "정보 출력 성공";
+            echo json_encode($res, JSON_NUMERIC_CHECK);
+            break;
+
+        /*
+         * API No. 4
+         * API Name : 보유 포인트 합계 조회 API
+         * 마지막 수정 날짜 : 20.08.14
+         */
+        case "getUserPointSum":
+            http_response_code(200);
+
+            $keyword = $_GET['userId'];
+
+            if(!isValidId($keyword)){
+                $res->isSuccess = FALSE;
+                $res->code = 200;
+                $res->message = "유효하지 않은 ID입니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                break;
+            }
+
+            $res->result = getUserPointSum($keyword);
+            $res->isSuccess = TRUE;
+            $res->code = 100;
+            $res->message = "정보 출력 성공";
+            echo json_encode($res, JSON_NUMERIC_CHECK);
+            break;
+
+        /*
+         * API No. 5
+         * API Name : 찜한가게, 바로결제, 전화주문 목록 조회 API
+         * 마지막 수정 날짜 : 20.08.14
+         */
+        case "getUserChoose":
+            http_response_code(200);
+
+            $keyword = $_GET['userId'];
+            $flag = $_GET['flag'];
+
+            if(!isValidId($keyword)){
+                $res->isSuccess = FALSE;
+                $res->code = 200;
+                $res->message = "유효하지 않은 ID입니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                break;
+            }
+
+            if($flag > 2){
+                $res->isSuccess = FALSE;
+                $res->code = 300;
+                $res->message = "유효하지 않은 flag입니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                break;
+            }
+
+            $res->result = getUserChoose($keyword, $flag);
+            $res->isSuccess = TRUE;
+            $res->code = 100;
+            $res->message = "정보 출력 성공";
+            echo json_encode($res, JSON_NUMERIC_CHECK);
+            break;
+
+        /*
+         * API No. 6
+         * API Name : Store 상세 정보 출력 API
+         * 마지막 수정 날짜 : 20.08.14
+         */
+        case "getStore":
+            http_response_code(200);
+
+            $keyword = $_GET['storeId'];
+
+            if(!isValidStoreId($keyword)){
+                $res->isSuccess = FALSE;
+                $res->code = 200;
+                $res->message = "유효하지 않은 ID입니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                break;
+            }
+
+            $res->result = getStore($keyword);
+            $res->isSuccess = TRUE;
+            $res->code = 100;
+            $res->message = "정보 출력 성공";
+            echo json_encode($res, JSON_NUMERIC_CHECK);
+            break;
+
+        /*
+         * API No. 7
+         * API Name : Store 최근리뷰 / 사장님 댓글 개수 조회 API
+         * 마지막 수정 날짜 : 20.08.14
+         */
+        case "getStoreReview":
+            http_response_code(200);
+
+            $keyword = $_GET['storeId'];
+
+            if(!isValidStoreId($keyword)){
+                $res->isSuccess = FALSE;
+                $res->code = 200;
+                $res->message = "유효하지 않은 ID입니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                break;
+            }
+
+            $res->result = getStoreReview($keyword);
+            $res->isSuccess = TRUE;
+            $res->code = 100;
+            $res->message = "정보 출력 성공";
+            echo json_encode($res, JSON_NUMERIC_CHECK);
+            break;
+
+         /*
+         * API No. 8
+         * API Name : Store 찜 개수 조회 API
+         * 마지막 수정 날짜 : 20.08.14
+         */
+        case "getStoreChoose":
+            http_response_code(200);
+
+            $keyword = $_GET['storeId'];
+
+            if(!isValidStoreId($keyword)){
+                $res->isSuccess = FALSE;
+                $res->code = 200;
+                $res->message = "유효하지 않은 ID입니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                break;
+            }
+
+            $res->result = getStoreChoose($keyword);
+            $res->isSuccess = TRUE;
+            $res->code = 100;
+            $res->message = "정보 출력 성공";
+            echo json_encode($res, JSON_NUMERIC_CHECK);
+            break;
+
+        /*
+         * API No. 9
+         * API Name : Store 메뉴 목록 조회 API
+         * 마지막 수정 날짜 : 20.08.14
+         */
+        case "getStoreMenu":
+            http_response_code(200);
+
+            $keyword = $_GET['storeId'];
+
+            if(!isValidStoreId($keyword)){
+                $res->isSuccess = FALSE;
+                $res->code = 200;
+                $res->message = "유효하지 않은 ID입니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                break;
+            }
+
+            $res->result = getStoreMenu($keyword);
+            $res->isSuccess = TRUE;
+            $res->code = 100;
+            $res->message = "정보 출력 성공";
+            echo json_encode($res, JSON_NUMERIC_CHECK);
+            break;
+
+
+         /*
+         * API No. 10
+         * API Name : User 주문 내역 목록 조회 API
+         * 마지막 수정 날짜 : 20.08.14
+         */
+        case "getUserOrder":
+            http_response_code(200);
+
+            $keyword = $_GET['userId'];
+
+            if(!isValidId($keyword)){
+                $res->isSuccess = FALSE;
+                $res->code = 200;
+                $res->message = "유효하지 않은 ID입니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                break;
+            }
+
+            $res->result = getUserOrder($keyword);
+            $res->isSuccess = TRUE;
+            $res->code = 100;
+            $res->message = "정보 출력 성공";
+            echo json_encode($res, JSON_NUMERIC_CHECK);
+            break;
+
+        /*
+        * API No. 11
+        * API Name : User 상세 주문 내역 정보 조회 API
+        * 마지막 수정 날짜 : 20.08.17
+        */
+        case "getUserOrderDetail":
+            http_response_code(200);
+
+            $keyword = $_GET['orderNum'];
+
+            if(!isValidNumber($keyword)){
+                $res->isSuccess = FALSE;
+                $res->code = 200;
+                $res->message = "유효하지 않은 주문 번호입니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                break;
+            }
+
+            $res->result = getUserOrderDetail($keyword);
+            $res->isSuccess = TRUE;
+            $res->code = 100;
+            $res->message = "정보 출력 성공";
+            echo json_encode($res, JSON_NUMERIC_CHECK);
+            break;
+
+
+        /*
+        * API No. 12
+        * API Name : User 주문 내역 메뉴 정보 조회 API
+        * 마지막 수정 날짜 : 20.08.17
+        */
+        case "getUserOrderMenu":
+            http_response_code(200);
+
+            $keyword = $_GET['userId'];
+
+            if(!isValidId($keyword)){
+                $res->isSuccess = FALSE;
+                $res->code = 200;
+                $res->message = "유효하지 않은 ID입니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                break;
+            }
+
+            $res->result = getUserOrderMenu($keyword);
+            $res->isSuccess = TRUE;
+            $res->code = 100;
+            $res->message = "정보 출력 성공";
+            echo json_encode($res, JSON_NUMERIC_CHECK);
+            break;
+
+
+        /*
+        * API No. 13
+        * API Name : User 리뷰 개수 조회 API
+        * 마지막 수정 날짜 : 20.08.17
+        */
+        case "getUserReviewCount":
+            http_response_code(200);
+
+            $keyword = $_GET['userId'];
+
+            if(!isValidId($keyword)){
+                $res->isSuccess = FALSE;
+                $res->code = 200;
+                $res->message = "유효하지 않은 ID입니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                break;
+            }
+
+            $res->result = getUserReviewCount($keyword);
+            $res->isSuccess = TRUE;
+            $res->code = 100;
+            $res->message = "정보 출력 성공";
+            echo json_encode($res, JSON_NUMERIC_CHECK);
+            break;
+
+        /*
+        * API No. 14
+        * API Name : User 리뷰 목록 조회 API
+        * 마지막 수정 날짜 : 20.08.17
+        */
+        case "getUserReview":
+            http_response_code(200);
+
+            $keyword = $_GET['userId'];
+
+            if(!isValidId($keyword)){
+                $res->isSuccess = FALSE;
+                $res->code = 200;
+                $res->message = "유효하지 않은 ID입니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                break;
+            }
+
+            $res->result = getUserReview($keyword);
+            $res->isSuccess = TRUE;
+            $res->code = 100;
+            $res->message = "정보 출력 성공";
+            echo json_encode($res, JSON_NUMERIC_CHECK);
+            break;
+
+        /*
+        * API No. 15
+        * API Name : 회원가입 API
+        * 마지막 수정 날짜 : 20.08.17
+        */
+        case "createUser":
+            http_response_code(200);
+
+            if($req->UserId == null) {
+                $res->isSuccess = FALSE;
+                $res->code = 300;
+                $res->message = "아이디 값이 누락되었습니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                break;
+            }
+
+                if(idCheck($req->UserId)){
+                $res->isSuccess = FALSE;
+                $res->code = 200;
+                $res->message = "이미 존재하는 ID입니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                break;
+            }
+
+            if($req->UserPw == null){
+                $res->isSuccess = FALSE;
+                $res->code = 400;
+                $res->message = "비밀번호 값이 누락되었습니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                break;
+            }
+
+            if($req->Phone == null){
+                $res->isSuccess = FALSE;
+                $res->code = 500;
+                $res->message = "사용자 번호 값이 누락되었습니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                break;
+            }
+
+            if($req->Email == null){
+                $res->isSuccess = FALSE;
+                $res->code = 600;
+                $res->message = "이메일 값이 누락되었습니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                break;
+            }
+
+            if ($req->Name == null){
+                $Name = $req->UserId;
+                createUser($req->UserId, $req->UserPw, $Name, $req->Phone, $req->Email, $req->MailReceiving, $req->SmsReceiving);
+                $res->isSuccess = TRUE;
+                $res->code = 100;
+                $res->message = "테스트 성공";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                break;
+            }
+
+            createUser($req->UserId, $req->UserPw, $req->Name, $req->Phone, $req->Email, $req->MailReceiving, $req->SmsReceiving);
+            $res->isSuccess = TRUE;
+            $res->code = 100;
+            $res->message = "테스트 성공";
+            echo json_encode($res, JSON_NUMERIC_CHECK);
+            break;
+
+        /*
+         * API No. 0
+         * API Name : 테스트 API
+         * 마지막 수정 날짜 : 19.04.29
+         */
+        case "getUsers":
+            http_response_code(200);
+
+            $keyword = $_GET['keyword'];
+
+            $res->result = getUsers($keyword);
+            $res->isSuccess = TRUE;
+            $res->code = 100;
+            $res->message = "테스트 성공";
+            echo json_encode($res, JSON_NUMERIC_CHECK);
+            break;
+        /*
+         * API No. 0
+         * API Name : 테스트 Path Variable API
+         * 마지막 수정 날짜 : 19.04.29
+         */
+        case "getUserDetail":
+            http_response_code(200);
+
+            $no = $vars["no"];
+
+            if(!isValidNo($no)){
+                $res->isSuccess = FALSE;
+                $res->code = 100;
+                $res->message = "유효하지 않은 no입니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                break;
+            }
+
+            $res->result = getUserDetail($vars["no"]);
+            $res->isSuccess = TRUE;
+            $res->code = 100;
+            $res->message = "테스트 성공";
+            echo json_encode($res, JSON_NUMERIC_CHECK);
+            break;
+
+
     }
-
-    return $res;
+} catch (\Exception $e) {
+    return getSQLErrorException($errorLogs, $e, $req);
 }
-
-function getUserPointSum($keyword)
-{
-    $pdo = pdoSqlConnect();
-
-    $query = "SELECT CONCAT(sum(Point), '원') AS Sum FROM Point
-        JOIN User ON UserId = ?
-        WHERE User.UserIdx = Point.UserIdx AND Point.IsDeleted <= 0
-        GROUP BY UserID;
-        ";
-
-    $st = $pdo->prepare($query);
-    $st->execute([$keyword]);
-    $st->setFetchMode(PDO::FETCH_ASSOC);
-    $res = $st->fetchAll();
-
-    $st = null;
-    $pdo = null;
-
-    return $res[0];
-}
-
-function getUserChoose($keyword, $flag)
-{
-    $pdo = pdoSqlConnect();
-
-    if($flag == 2) {
-        $query = "SELECT Store.Name, Store.Star, Store.Min, Store.Represent, Store.IsOpen, Store.IsOrder
-        FROM Choose
-        JOIN User on User.UserId = ?
-        JOIN  Store
-        ON Choose.UserIdx = User.UserIdx AND Choose.StoreIdx = Store.StoreIdx;";
-    }
-    else {
-        $query = "SELECT Store.Name, Store.Star, Store.Min, Store.Represent, Store.IsOpen, Store.IsOrder
-        FROM OrderMenu
-        JOIN User on User.UserId = ?
-        JOIN  Store
-        ON OrderMenu.UserIdx = User.UserIdx AND OrderMenu.Payment = ? AND OrderMenu.StoreIdx = Store.StoreIdx;";
-    }
-
-    $st = $pdo->prepare($query);
-    $st->execute([$keyword, $flag]);
-    $st->setFetchMode(PDO::FETCH_ASSOC);
-    $res = $st->fetchAll();
-
-    $st = null;
-    $pdo = null;
-
-    return $res;
-}
-
-function getStore($keyword)
-{
-    $pdo = pdoSqlConnect();
-    $query = "SELECT Store.Name, Star, Min,  Type, CONCAT(FORMAT(Store.Tip , 0), '원') AS Tip, Store.Phone, Store.DeliveryTime, Explan
-        FROM Store
-        WHERE Store.StoreID = ?;";
-
-    $st = $pdo->prepare($query);
-    $st->execute([$keyword]);
-    $st->setFetchMode(PDO::FETCH_ASSOC);
-    $res = $st->fetchAll();
-
-    $st = null;
-    $pdo = null;
-
-    $res = array_filter($res[0]);
-    return $res;
-}
-
-function getStoreReview($keyword)
-{
-    $pdo = pdoSqlConnect();
-    $query = "SELECT COUNT(*) AS Review, COUNT(Review.Comment) AS Comments
-        FROM Store
-        JOIN Review
-        ON Review.StoreIdx = Store.StoreIdx
-        WHERE StoreId = ?;";
-
-    $st = $pdo->prepare($query);
-    $st->execute([$keyword]);
-    $st->setFetchMode(PDO::FETCH_ASSOC);
-    $res = $st->fetchAll();
-
-    $st = null;
-    $pdo = null;
-
-    return $res[0];
-}
-
-function getStoreChoose($keyword)
-{
-    $pdo = pdoSqlConnect();
-    $query = "SELECT COUNT(*) As Choose
-        FROM Store
-        JOIN Choose
-        ON Choose.StoreIdx = Store.StoreIdx
-        WHERE StoreId = ?;";
-
-    $st = $pdo->prepare($query);
-    $st->execute([$keyword]);
-    $st->setFetchMode(PDO::FETCH_ASSOC);
-    $res = $st->fetchAll();
-
-    $st = null;
-    $pdo = null;
-
-    return $res[0];
-}
-
-function getStoreMenu($keyword)
-{
-    $pdo = pdoSqlConnect();
-
-    $query = "SELECT Menu.Name AS MenuName, CONCAT(FORMAT(Menu.Price , 0), '원') AS Price, Menu.Picture, Menu.IsPossible, Menu.MenuNum
-        FROM Menu
-        JOIN  Store
-        ON Store.StoreID = 'mmmm' AND Menu.StoreIdx = Store.StoreIdx;";
-
-    $st = $pdo->prepare($query);
-    $st->execute([$keyword]);
-    $st->setFetchMode(PDO::FETCH_ASSOC);
-    $res = $st->fetchAll();
-
-    $st = null;
-    $pdo = null;
-
-    return $res;
-}
-
-function getUserOrder($keyword)
-{
-    $pdo = pdoSqlConnect();
-
-    $query = "SELECT OrderMenu.Type,
-            CASE
-                WHEN TIMESTAMPDIFF(DAY, OrderMenu.Date, NOW()) < 1 THEN CONCAT('오늘')
-                WHEN TIMESTAMPDIFF(DAY, OrderMenu.Date, NOW()) <= 7 THEN CONCAT(TIMESTAMPDIFF(DAY, OrderMenu.Date, NOW()), '일 전')
-                ELSE CONCAT(date_format(OrderMenu.Date,'%m/%d'), ' (', SUBSTR( _UTF8'일월화수목금토', DAYOFWEEK(OrderMenu.Date), 1),')')
-        END AS Date,
-        Store.Category, Store.Name, OrderMenu.IsReview, CONCAT(FORMAT(Store.Tip , 0), '원') AS Tip,
-               GROUP_CONCAT(Menu.Name) AS MenuName, CONCAT(FORMAT(SUM(Menu.Price) , 0), '원') AS MenuPrice, Store.StoreId, OrderMenu.OrderNumber, OrderMenu.OrderIdx
-        FROM OrderMenu
-        JOIN User on User.UserId = 'judy'
-        JOIN  Store
-        ON OrderMenu.UserIdx = User.UserIdx AND OrderMenu.Type <= 1 AND OrderMenu.StoreIdx = Store.StoreIdx
-        JOIN  OrderMenuList
-        ON OrderMenu.OrderNumber = OrderMenuList.OrderNumber
-        JOIN  Menu
-        ON Menu.MenuNum = OrderMenuList.MenuNum
-        GROUP BY OrderMenu.Date, OrderMenu.OrderIdx
-        ORDER BY OrderMenu.Date DESC ;";
-
-    $st = $pdo->prepare($query);
-    $st->execute([$keyword]);
-    $st->setFetchMode(PDO::FETCH_ASSOC);
-    $res = $st->fetchAll();
-
-    $st = null;
-    $pdo = null;
-
-    return $res;
-}
-
-function getUserOrderDetail($keyword)
-{
-    $pdo = pdoSqlConnect();
-
-    $query = "SELECT
-       CASE
-           WHEN HOUR(OrderMenu.Date) < 12 THEN date_format(OrderMenu.Date,'%Y년 %m월 %d일 오전 %h:%i')
-           ELSE date_format(OrderMenu.Date,'%Y년 %m월 %d일 오후 %h:%i')
-       END AS Date,
-        OrderMenu.OrderNumber,  Store.Name, CONCAT(FORMAT(Store.Tip , 0), '원') AS Tip, OrderMenu.IsDelivered, Store.Phone, OrderMenu.Payment, OrderMenu.Address, Store.StoreId
-        FROM OrderMenu
-        JOIN  Store
-        ON OrderMenu.OrderNumber = ? AND OrderMenu.StoreIdx = Store.StoreIdx;";
-
-    $st = $pdo->prepare($query);
-    $st->execute([$keyword]);
-    $st->setFetchMode(PDO::FETCH_ASSOC);
-    $res = $st->fetchAll();
-
-    $st = null;
-    $pdo = null;
-
-    $res = array_filter($res[0]);
-    return $res;
-}
-
-function getUserOrderMenu($keyword)
-{
-    $pdo = pdoSqlConnect();
-
-    $query = "SELECT Menu.Name, CONCAT(FORMAT(Menu.Price , 0), '원') AS MenuPrice, OrderMenuList.MenuOption, OrderMenuList.MenuCnt
-        FROM OrderMenu
-        JOIN User on User.UserId = ?
-        JOIN  OrderMenuList
-        ON OrderMenu.UserIdx = User.UserIdx AND OrderMenu.OrderNumber = 'B0QE01AX5S' AND OrderMenuList.OrderNumber = OrderMenu.OrderNumber
-        JOIN  Menu
-        ON Menu.MenuNum = OrderMenuList.MenuNum;";
-
-    $st = $pdo->prepare($query);
-    $st->execute([$keyword]);
-    $st->setFetchMode(PDO::FETCH_ASSOC);
-    $res = $st->fetchAll();
-
-    $st = null;
-    $pdo = null;
-
-    for($i=0; $i<sizeof($res); $i++)
-    {
-        $res[$i] = array_filter($res[$i]);
-    }
-
-    return $res;
-}
-
-function getUserReviewCount($keyword)
-{
-    $pdo = pdoSqlConnect();
-
-    $query = "SELECT COUNT(*) AS MyReview
-        FROM Review
-        JOIN User on User.UserId = ?
-        WHERE Review.UserIdx = User.UserIdx;";
-
-    $st = $pdo->prepare($query);
-    $st->execute([$keyword]);
-    $st->setFetchMode(PDO::FETCH_ASSOC);
-    $res = $st->fetchAll();
-
-    $st = null;
-    $pdo = null;
-
-    return $res[0];
-}
-
-function getUserReview($keyword)
-{
-    $pdo = pdoSqlConnect();
-
-    $query = "SELECT Review.Contents, Review.Tag, GROUP_CONCAT(ReviewPicture.Picture SEPARATOR '|') AS Picture,
-            CASE
-                WHEN TIMESTAMPDIFF(DAY, Review.Date, NOW()) < 1 THEN CONCAT('방금 전')
-                WHEN TIMESTAMPDIFF(DAY, Review.Date, NOW()) <= 1 THEN CONCAT('어제')
-                WHEN TIMESTAMPDIFF(DAY, Review.Date, NOW()) <= 7 THEN CONCAT('이번 주')
-                WHEN TIMESTAMPDIFF(DAY, Review.Date, NOW()) <= 29 THEN CONCAT(CAST(TIMESTAMPDIFF(DAY, Review.Date, NOW()) / 7 as unsigned), '주 전')
-                WHEN TIMESTAMPDIFF(MONTH , Review.Date, NOW()) <= 1 THEN CONCAT('지난 달')
-                WHEN TIMESTAMPDIFF(MONTH , Review.Date, NOW()) < 12 THEN CONCAT(TIMESTAMPDIFF(MONTH , Review.Date, NOW()), '개월 전')
-                ELSE CONCAT('작년')
-            END AS Date
-             , Review.Star, Store.Name, Store.StoreId
-        FROM Review
-        JOIN User on User.UserId = 'judy'
-        JOIN  Store
-        ON Review.UserIdx = User.UserIdx AND Review.isDeleted = 'N' AND Review.StoreIdx = Store.StoreIdx
-        JOIN ReviewPicture
-        ON Review.ReviewIdx = ReviewPicture.ReviewIdx
-        GROUP BY Review.ReviewIdx, Review.Date
-        ORDER BY Review.Date DESC;";
-
-    $st = $pdo->prepare($query);
-    $st->execute([$keyword]);
-    $st->setFetchMode(PDO::FETCH_ASSOC);
-    $res = $st->fetchAll();
-
-    $st = null;
-    $pdo = null;
-
-    for($i=0; $i<sizeof($res); $i++)
-    {
-        $res[$i] = array_filter($res[$i]);
-    }
-
-    return $res;
-}
-
-function createUser($UserId, $UserPw, $Name, $Phone, $Email, $MailReceiving, $SmsReceiving, $IsDeleted, $Latitude, $Longitude){
-    $pdo = pdoSqlConnect();
-    $query = "INSERT INTO User (UserId, UserPw, Name, Phone, Email, Level, MailReceiving, SmsReceiving, IsDeleted, Latitude, Longitude)
- VALUES (?,?,?,?,?,0,?,?,?,?,?);";
-
-    $st = $pdo->prepare($query);
-    $st->execute([$UserId, $UserPw, $Name, $Phone, $Email, $MailReceiving, $SmsReceiving, $IsDeleted, $Latitude, $Longitude]);
-
-    $st = null;
-    $pdo = null;
-}
-
-function isValidId($keyword)
-{
-    $pdo = pdoSqlConnect();
-    $query = "SELECT EXISTS (SELECT * FROM User WHERE UserId = ? AND IsDeleted = 'N') AS exist;";
-
-    $st = $pdo->prepare($query);
-    $st->execute([$keyword]);
-    //    $st->execute();
-    $st->setFetchMode(PDO::FETCH_ASSOC);
-    $res = $st->fetchAll();
-
-    $st = null;
-    $pdo = null;
-    //echo json_encode($res);
-    return intval($res[0]['exist']);
-}
-
-function isValidStoreId($keyword)
-{
-    $pdo = pdoSqlConnect();
-    $query = "SELECT EXISTS (SELECT * FROM Store WHERE StoreId = ? AND IsDeleted = 'N') AS exist;";
-
-    $st = $pdo->prepare($query);
-    $st->execute([$keyword]);
-    //    $st->execute();
-    $st->setFetchMode(PDO::FETCH_ASSOC);
-    $res = $st->fetchAll();
-
-    $st = null;
-    $pdo = null;
-    //echo json_encode($res);
-    return intval($res[0]['exist']);
-}
-
-function isValidNumber($keyword)
-{
-    $pdo = pdoSqlConnect();
-    $query = "SELECT EXISTS (SELECT * FROM OrderMenu WHERE OrderNumber = ?) AS exist;";
-
-    $st = $pdo->prepare($query);
-    $st->execute([$keyword]);
-    //    $st->execute();
-    $st->setFetchMode(PDO::FETCH_ASSOC);
-    $res = $st->fetchAll();
-
-    $st = null;
-    $pdo = null;
-    //echo json_encode($res);
-    return intval($res[0]['exist']);
-}
-
-function idCheck($keyword)
-{
-    $pdo = pdoSqlConnect();
-    $query = "SELECT EXISTS (SELECT * FROM User WHERE UserId = ?) AS exist;";
-
-    $st = $pdo->prepare($query);
-    $st->execute([$keyword]);
-    //    $st->execute();
-    $st->setFetchMode(PDO::FETCH_ASSOC);
-    $res = $st->fetchAll();
-
-    $st = null;
-    $pdo = null;
-    //echo json_encode($res);
-    return intval($res[0]['exist']);
-}
-
-//READ
-function getUsers($keyword)
-{
-    $pdo = pdoSqlConnect();
-    $query = "select * from testTable where name like concat('%', ?, '%');";
-
-    $st = $pdo->prepare($query);
-    //    $st->execute([$param,$param]);
-    $st->execute([$keyword]); //파라미터 list 형태로 넣을 것
-    $st->setFetchMode(PDO::FETCH_ASSOC);
-    $res = $st->fetchAll();
-
-    $st = null;
-    $pdo = null;
-
-    return $res;
-}
-
-//READ
-function getUserDetail($no)
-{
-    $pdo = pdoSqlConnect();
-    $query = "SELECT * FROM testTable WHERE no = ?;";
-
-    $st = $pdo->prepare($query);
-    $st->execute([$no]); // 여기가 ? 변수, 꼭 리스트 안에 넣을것!
-    //    $st->execute();
-    $st->setFetchMode(PDO::FETCH_ASSOC);
-    $res = $st->fetchAll();
-
-    $st = null;
-    $pdo = null;
-
-    return $res[0];
-}
-
-function isValidNo($no)
-{
-    $pdo = pdoSqlConnect();
-    $query = "SELECT EXISTS (SELECT * FROM testTable WHERE no = ?) AS exist;";
-
-    $st = $pdo->prepare($query);
-    $st->execute([$no]); // 여기가 ? 변수, 꼭 리스트 안에 넣을것!
-    //    $st->execute();
-    $st->setFetchMode(PDO::FETCH_ASSOC);
-    $res = $st->fetchAll();
-
-    $st = null;
-    $pdo = null;
-    //echo json_encode($res);
-    return intval($res[0]['exist']);
-}
-
-function isValidUser($id, $pw){
-    $pdo = pdoSqlConnect();
-    $query = "SELECT EXISTS(SELECT * FROM User WHERE userId= ? AND userPw = ?) AS exist;";
-
-
-    $st = $pdo->prepare($query);
-    //    $st->execute([$param,$param]);
-    $st->execute([$id, $pw]);
-    $st->setFetchMode(PDO::FETCH_ASSOC);
-    $res = $st->fetchAll();
-
-    $st=null;$pdo = null;
-
-    return intval($res[0]["exist"]);
-
-}
-
-
-// CREATE
-//    function addMaintenance($message){
-//        $pdo = pdoSqlConnect();
-//        $query = "INSERT INTO MAINTENANCE (MESSAGE) VALUES (?);";
-//
-//        $st = $pdo->prepare($query);
-//        $st->execute([$message]);
-//
-//        $st = null;
-//        $pdo = null;
-//
-//    }
-
-
-// UPDATE
-//    function updateMaintenanceStatus($message, $status, $no){
-//        $pdo = pdoSqlConnect();
-//        $query = "UPDATE MAINTENANCE
-//                        SET MESSAGE = ?,
-//                            STATUS  = ?
-//                        WHERE NO = ?";
-//
-//        $st = $pdo->prepare($query);
-//        $st->execute([$message, $status, $no]);
-//        $st = null;
-//        $pdo = null;
-//    }
-
-// RETURN BOOLEAN
-//    function isRedundantEmail($email){
-//        $pdo = pdoSqlConnect();
-//        $query = "SELECT EXISTS(SELECT * FROM USER_TB WHERE EMAIL= ?) AS exist;";
-//
-//
-//        $st = $pdo->prepare($query);
-//        //    $st->execute([$param,$param]);
-//        $st->execute([$email]);
-//        $st->setFetchMode(PDO::FETCH_ASSOC);
-//        $res = $st->fetchAll();
-//
-//        $st=null;$pdo = null;
-//
-//        return intval($res[0]["exist"]);
-//
-//    }
