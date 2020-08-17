@@ -391,7 +391,16 @@ try {
         */
         case "createUser":
             http_response_code(200);
-            $res->result = createUser($req->UserId, UserPw, Name, Phone, Email, Level, MailReceiving, SmsReceiving, IsDeleted, Latitude, Longitude);
+
+            if(idCheck($req->UserId)){
+                $res->isSuccess = FALSE;
+                $res->code = 200;
+                $res->message = "이미 존재하는 ID입니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                break;
+            }
+            
+            createUser($req->UserId, $req->UserPw, $req->Name, $req->Phone, $req->Email, $req->Level, $req->MailReceiving, $req->SmsReceiving, $req->IsDeleted, $req->Latitude, $req->Longitude);
             $res->isSuccess = TRUE;
             $res->code = 100;
             $res->message = "테스트 성공";

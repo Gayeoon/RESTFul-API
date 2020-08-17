@@ -341,19 +341,17 @@ function getUserReview($keyword)
     return $res;
 }
 
-function createUser($UserId)
-{
-    $pdo = pdoSqlConnect();
-    $query = "INSERT INTO User (UserId)
-VALUES (?)";
+function createUser($UserId, $UserPw, $Name, $Phone, $Email, $Level, $MailReceiving, $SmsReceiving, $IsDeleted, $Latitude, $Longitude){
+        $pdo = pdoSqlConnect();
+        $query = "INSERT INTO User (UserId, UserPw, Name, Phone, Email, Level, MailReceiving, SmsReceiving, IsDeleted, Latitude, Longitude)
+ VALUES (?,?,?,?,?,?,?,?,?,?,?);";
 
-    $st = $pdo->prepare($query);
-    $st->execute([$UserId]);
+        $st = $pdo->prepare($query);
+        $st->execute([$UserId, $UserPw, $Name, $Phone, $Email, $Level, $MailReceiving, $SmsReceiving, $IsDeleted, $Latitude, $Longitude]);
 
-    $st = null;
-    $pdo = null;
-
-}
+        $st = null;
+        $pdo = null;
+    }
 
 function isValidId($keyword)
 {
