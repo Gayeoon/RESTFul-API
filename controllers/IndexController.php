@@ -386,7 +386,7 @@ try {
 
         /*
         * API No. 15
-        * API Name :
+        * API Name : User 회원가입 API
         * 마지막 수정 날짜 : 20.08.17
         */
         case "createUser":
@@ -396,6 +396,7 @@ try {
                 $res->isSuccess = FALSE;
                 $res->code = 300;
                 $res->message = "아이디 값이 누락되었습니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
                 break;
             }
 
@@ -403,6 +404,7 @@ try {
                 $res->isSuccess = FALSE;
                 $res->code = 200;
                 $res->message = "이미 존재하는 ID입니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
                 break;
             }
 
@@ -410,6 +412,7 @@ try {
                 $res->isSuccess = FALSE;
                 $res->code = 400;
                 $res->message = "비밀번호 값이 누락되었습니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
                 break;
             }
 
@@ -417,6 +420,7 @@ try {
                 $res->isSuccess = FALSE;
                 $res->code = 500;
                 $res->message = "사용자 번호 값이 누락되었습니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
                 break;
             }
 
@@ -424,18 +428,101 @@ try {
                 $res->isSuccess = FALSE;
                 $res->code = 600;
                 $res->message = "이메일 값이 누락되었습니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
                 break;
             }
 
             if ($req->Name == null){
-                createUser($req->UserId, $req->UserPw, $req->UserId, $req->Phone, $req->Email, $req->MailReceiving, $req->SmsReceiving);
+                $Name = $req->UserId;
+                createUser($req->UserId, $req->UserPw, $Name, $req->Phone, $req->Email, $req->MailReceiving, $req->SmsReceiving);
                 $res->isSuccess = TRUE;
                 $res->code = 100;
                 $res->message = "테스트 성공";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
                 break;
             }
 
             createUser($req->UserId, $req->UserPw, $req->Name, $req->Phone, $req->Email, $req->MailReceiving, $req->SmsReceiving);
+            $res->isSuccess = TRUE;
+            $res->code = 100;
+            $res->message = "테스트 성공";
+            echo json_encode($res, JSON_NUMERIC_CHECK);
+            break;
+
+        /*
+        * API No. 16
+        * API Name : Store 회원가입 API
+        * 마지막 수정 날짜 : 20.08.18
+        */
+        case "createStore":
+            http_response_code(200);
+            if($req->StoreId == null) {
+                $res->isSuccess = FALSE;
+                $res->code = 300;
+                $res->message = "아이디 값이 누락되었습니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                break;
+            }
+
+            if(isValidStoreId($req->StoreId)){
+                $res->isSuccess = FALSE;
+                $res->code = 200;
+                $res->message = "이미 존재하는 ID입니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                break;
+            }
+            if($req->StorePw == null){
+                $res->isSuccess = FALSE;
+                $res->code = 400;
+                $res->message = "비밀번호 값이 누락되었습니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                break;
+            }
+
+            if($req->Phone == null){
+                $res->isSuccess = FALSE;
+                $res->code = 500;
+                $res->message = "Store 번호 값이 누락되었습니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                break;
+            }
+
+            if($req->Type == null){
+                $res->isSuccess = FALSE;
+                $res->code = 600;
+                $res->message = "Type 값이 누락되었습니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                break;
+            }
+
+            if($req->Name == null){
+                $res->isSuccess = FALSE;
+                $res->code = 700;
+                $res->message = "Store 이름 값이 누락되었습니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                break;
+            }
+
+            if($req->Type == null){
+                $res->isSuccess = FALSE;
+                $res->code = 800;
+                $res->message = "Category 값이 누락되었습니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                break;
+            }
+
+            if($req->OpenTime == null || $req->CloseTime == null){
+                $res->isSuccess = FALSE;
+                $res->code = 900;
+                $res->message = "Open / Close 시간 값이 누락되었습니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                break;
+            }
+
+            createStore($req->StoreId, $req->StorePw, $req->Name, $req->Type, $req->Category,
+                $req->OpenTime, $req->CloseTime, $req->IsDelivery, $req->IsOrder, $req->IsBmart,
+                $req->Represent, $req->Min, $req->Tip, $req->Phone, $req->Explan, $req->DeliveryTime,
+                $req->IsOpenList, $req->IsUltraCall, $req->Latitude, $req->Longitude);
             $res->isSuccess = TRUE;
             $res->code = 100;
             $res->message = "테스트 성공";
