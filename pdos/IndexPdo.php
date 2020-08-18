@@ -1,5 +1,6 @@
 <?php
 
+// API NO. 1 User 모든 정보 출력
 function getUserInfo($keyword)
 {
     $pdo = pdoSqlConnect();
@@ -19,6 +20,7 @@ function getUserInfo($keyword)
     return $res;
 }
 
+// API NO. 2 My배민 페이지의 User 정보 조회
 function getUser($keyword)
 {
     $pdo = pdoSqlConnect();
@@ -40,6 +42,7 @@ function getUser($keyword)
     return $res;
 }
 
+// API NO. 3 포인트 이용 내역 조회
 function getUserPoint($keyword)
 {
     $pdo = pdoSqlConnect();
@@ -66,13 +69,14 @@ function getUserPoint($keyword)
     return $res;
 }
 
+// API NO. 4 보유 포인트 합계 조회
 function getUserPointSum($keyword)
 {
     $pdo = pdoSqlConnect();
 
     $query = "SELECT CONCAT(sum(Point), '원') AS Sum FROM Point
         JOIN User ON UserId = ?
-        WHERE User.UserIdx = Point.UserIdx AND Point.IsDeleted <= 0
+        WHERE User.UserIdx = Point.UserIdx AND Point.IsDeleted >= 3
         GROUP BY UserID;
         ";
 
@@ -87,6 +91,7 @@ function getUserPointSum($keyword)
     return $res[0];
 }
 
+// API NO. 5 찜한가게, 바로결제, 전화주문 목록 조회
 function getUserChoose($keyword, $flag)
 {
     $pdo = pdoSqlConnect();
@@ -97,6 +102,9 @@ function getUserChoose($keyword, $flag)
         JOIN User on User.UserId = ?
         JOIN  Store
         ON Choose.UserIdx = User.UserIdx AND Choose.StoreIdx = Store.StoreIdx;";
+
+        $st = $pdo->prepare($query);
+        $st->execute([$keyword]);
     }
     else {
         $query = "SELECT Store.Name, Store.Star, Store.Min, Store.Represent, Store.IsOpen, Store.IsOrder
@@ -104,10 +112,12 @@ function getUserChoose($keyword, $flag)
         JOIN User on User.UserId = ?
         JOIN  Store
         ON OrderMenu.UserIdx = User.UserIdx AND OrderMenu.Payment = ? AND OrderMenu.StoreIdx = Store.StoreIdx;";
+
+        $st = $pdo->prepare($query);
+        $st->execute([$keyword, $flag]);
     }
 
-    $st = $pdo->prepare($query);
-    $st->execute([$keyword, $flag]);
+
     $st->setFetchMode(PDO::FETCH_ASSOC);
     $res = $st->fetchAll();
 
@@ -117,6 +127,7 @@ function getUserChoose($keyword, $flag)
     return $res;
 }
 
+// API NO. 6 Store 상세 정보
 function getStore($keyword)
 {
     $pdo = pdoSqlConnect();
@@ -136,6 +147,7 @@ function getStore($keyword)
     return $res;
 }
 
+// API NO. 7 Store 최근 리뷰 / 사장님 댓글 개수 조회
 function getStoreReview($keyword)
 {
     $pdo = pdoSqlConnect();
@@ -156,6 +168,7 @@ function getStoreReview($keyword)
     return $res[0];
 }
 
+// API NO. 8 Store 찜 개수 조회
 function getStoreChoose($keyword)
 {
     $pdo = pdoSqlConnect();
@@ -176,6 +189,7 @@ function getStoreChoose($keyword)
     return $res[0];
 }
 
+// API NO. 9 Store 메뉴 목록 조회
 function getStoreMenu($keyword)
 {
     $pdo = pdoSqlConnect();
@@ -196,6 +210,7 @@ function getStoreMenu($keyword)
     return $res;
 }
 
+// API NO. 10 User 주문 내역 목록 조회
 function getUserOrder($keyword)
 {
     $pdo = pdoSqlConnect();
@@ -230,6 +245,7 @@ function getUserOrder($keyword)
     return $res;
 }
 
+// API NO. 11 User 상세 주문 내역 정보 조회
 function getUserOrderDetail($keyword)
 {
     $pdo = pdoSqlConnect();
@@ -256,6 +272,7 @@ function getUserOrderDetail($keyword)
     return $res;
 }
 
+// API NO. 12 User 주문 내역 메뉴 정보 조회
 function getUserOrderMenu($keyword)
 {
     $pdo = pdoSqlConnect();
@@ -284,6 +301,7 @@ function getUserOrderMenu($keyword)
     return $res;
 }
 
+// API NO. 13 User 리뷰 개수 조회
 function getUserReviewCount($keyword)
 {
     $pdo = pdoSqlConnect();
@@ -304,6 +322,7 @@ function getUserReviewCount($keyword)
     return $res[0];
 }
 
+// API NO. 14 User 리뷰 목록 조회
 function getUserReview($keyword)
 {
     $pdo = pdoSqlConnect();
@@ -344,6 +363,7 @@ function getUserReview($keyword)
     return $res;
 }
 
+// API NO. 15 User 회원가입
 function createUser($UserId, $UserPw, $Name, $Phone, $Email, $MailReceiving, $SmsReceiving){
     $pdo = pdoSqlConnect();
     $query = "INSERT INTO User (UserId, UserPw, Name, Phone, Email, Level, MailReceiving, SmsReceiving)
@@ -356,6 +376,7 @@ function createUser($UserId, $UserPw, $Name, $Phone, $Email, $MailReceiving, $Sm
     $pdo = null;
 }
 
+// API NO. 16 Store 회원가입
 function createStore($StoreId, $StorePw, $Name, $Type, $Category,
                     $OpenTime, $CloseTime, $IsDelivery, $IsOrder, $IsBmart,
                     $Represent, $Min, $Tip, $Phone, $Explan, $DeliveryTime,
@@ -377,6 +398,7 @@ function createStore($StoreId, $StorePw, $Name, $Type, $Category,
     $pdo = null;
 }
 
+// API NO. 17 Store 메뉴 추가
 function createStoreMenu($StoreIdx, $Name, $Picture, $Price, $MenuOption){
     $pdo = pdoSqlConnect();
     $query = "INSERT INTO Menu (StoreIdx, Name, Picture, Price, IsPossible, MenuOption)
@@ -389,6 +411,7 @@ function createStoreMenu($StoreIdx, $Name, $Picture, $Price, $MenuOption){
     $pdo = null;
 }
 
+// Store Id 가져오기
 function getStoreId($keyword)
 {
     $pdo = pdoSqlConnect();
@@ -405,6 +428,7 @@ function getStoreId($keyword)
     return $res[0];
 }
 
+// ID 체크
 function isValidId($keyword)
 {
     $pdo = pdoSqlConnect();
@@ -422,6 +446,7 @@ function isValidId($keyword)
     return intval($res[0]['exist']);
 }
 
+// Store Id 중복 체크
 function isValidStoreId($keyword)
 {
     $pdo = pdoSqlConnect();
@@ -439,6 +464,7 @@ function isValidStoreId($keyword)
     return intval($res[0]['exist']);
 }
 
+// OrderNumber 유효성 체크
 function isValidNumber($keyword)
 {
     $pdo = pdoSqlConnect();
@@ -456,6 +482,7 @@ function isValidNumber($keyword)
     return intval($res[0]['exist']);
 }
 
+// ID 중복 체크
 function idCheck($keyword)
 {
     $pdo = pdoSqlConnect();
@@ -473,6 +500,7 @@ function idCheck($keyword)
     return intval($res[0]['exist']);
 }
 
+// 동일한 메뉴가 있는지 확인
 function checkMenu($storeIdx, $name)
 {
     $pdo = pdoSqlConnect();
@@ -490,75 +518,77 @@ function checkMenu($storeIdx, $name)
     return intval($res[0]['exist']);
 }
 
-//READ
-function getUsers($keyword)
-{
-    $pdo = pdoSqlConnect();
-    $query = "select * from testTable where name like concat('%', ?, '%');";
-
-    $st = $pdo->prepare($query);
-    //    $st->execute([$param,$param]);
-    $st->execute([$keyword]); //파라미터 list 형태로 넣을 것
-    $st->setFetchMode(PDO::FETCH_ASSOC);
-    $res = $st->fetchAll();
-
-    $st = null;
-    $pdo = null;
-
-    return $res;
-}
-
-//READ
-function getUserDetail($no)
-{
-    $pdo = pdoSqlConnect();
-    $query = "SELECT * FROM testTable WHERE no = ?;";
-
-    $st = $pdo->prepare($query);
-    $st->execute([$no]); // 여기가 ? 변수, 꼭 리스트 안에 넣을것!
-    //    $st->execute();
-    $st->setFetchMode(PDO::FETCH_ASSOC);
-    $res = $st->fetchAll();
-
-    $st = null;
-    $pdo = null;
-
-    return $res[0];
-}
-
-function isValidNo($no)
-{
-    $pdo = pdoSqlConnect();
-    $query = "SELECT EXISTS (SELECT * FROM testTable WHERE no = ?) AS exist;";
-
-    $st = $pdo->prepare($query);
-    $st->execute([$no]); // 여기가 ? 변수, 꼭 리스트 안에 넣을것!
-    //    $st->execute();
-    $st->setFetchMode(PDO::FETCH_ASSOC);
-    $res = $st->fetchAll();
-
-    $st = null;
-    $pdo = null;
-    //echo json_encode($res);
-    return intval($res[0]['exist']);
-}
-
-function isValidUser($id, $pw){
-    $pdo = pdoSqlConnect();
-    $query = "SELECT EXISTS(SELECT * FROM User WHERE userId= ? AND userPw = ?) AS exist;";
-
-
-    $st = $pdo->prepare($query);
-    //    $st->execute([$param,$param]);
-    $st->execute([$id, $pw]);
-    $st->setFetchMode(PDO::FETCH_ASSOC);
-    $res = $st->fetchAll();
-
-    $st=null;$pdo = null;
-
-    return intval($res[0]["exist"]);
-
-}
+//// Test
+//function getUsers($keyword)
+//{
+//    $pdo = pdoSqlConnect();
+//    $query = "select * from testTable where name like concat('%', ?, '%');";
+//
+//    $st = $pdo->prepare($query);
+//    //    $st->execute([$param,$param]);
+//    $st->execute([$keyword]); //파라미터 list 형태로 넣을 것
+//    $st->setFetchMode(PDO::FETCH_ASSOC);
+//    $res = $st->fetchAll();
+//
+//    $st = null;
+//    $pdo = null;
+//
+//    return $res;
+//}
+//
+//// Test
+//function getUserDetail($no)
+//{
+//    $pdo = pdoSqlConnect();
+//    $query = "SELECT * FROM testTable WHERE no = ?;";
+//
+//    $st = $pdo->prepare($query);
+//    $st->execute([$no]);
+//    //    $st->execute();
+//    $st->setFetchMode(PDO::FETCH_ASSOC);
+//    $res = $st->fetchAll();
+//
+//    $st = null;
+//    $pdo = null;
+//
+//    return $res[0];
+//}
+//
+//// Test
+//function isValidNo($no)
+//{
+//    $pdo = pdoSqlConnect();
+//    $query = "SELECT EXISTS (SELECT * FROM testTable WHERE no = ?) AS exist;";
+//
+//    $st = $pdo->prepare($query);
+//    $st->execute([$no]);
+//    //    $st->execute();
+//    $st->setFetchMode(PDO::FETCH_ASSOC);
+//    $res = $st->fetchAll();
+//
+//    $st = null;
+//    $pdo = null;
+//    //echo json_encode($res);
+//    return intval($res[0]['exist']);
+//}
+//
+//// Test
+//function isValidUser($id, $pw){
+//    $pdo = pdoSqlConnect();
+//    $query = "SELECT EXISTS(SELECT * FROM User WHERE userId= ? AND userPw = ?) AS exist;";
+//
+//
+//    $st = $pdo->prepare($query);
+//    //    $st->execute([$param,$param]);
+//    $st->execute([$id, $pw]);
+//    $st->setFetchMode(PDO::FETCH_ASSOC);
+//    $res = $st->fetchAll();
+//
+//    $st=null;$pdo = null;
+//
+//    return intval($res[0]["exist"]);
+//
+//}
 
 
 // CREATE
