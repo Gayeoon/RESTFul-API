@@ -377,6 +377,34 @@ function createStore($StoreId, $StorePw, $Name, $Type, $Category,
     $pdo = null;
 }
 
+function createStoreMenu($StoreIdx, $Name, $Picture, $Price, $MenuOption){
+    $pdo = pdoSqlConnect();
+    $query = "INSERT INTO Menu (StoreIdx, Name, Picture, Price, IsPossible, MenuOption)
+ VALUES (?, ?, ?, ?, 'Y', ?);";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$StoreIdx, $Name, $Picture, $Price, $MenuOption]);
+
+    $st = null;
+    $pdo = null;
+}
+
+function getStoreId($keyword)
+{
+    $pdo = pdoSqlConnect();
+    $query = "SELECT StoreIdx FROM Store WHERE StoreId = 'mmmm'";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$keyword]);
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    return $res[0];
+}
+
 function isValidId($keyword)
 {
     $pdo = pdoSqlConnect();
@@ -435,6 +463,23 @@ function idCheck($keyword)
 
     $st = $pdo->prepare($query);
     $st->execute([$keyword]);
+    //    $st->execute();
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+    //echo json_encode($res);
+    return intval($res[0]['exist']);
+}
+
+function checkMenu($storeIdx, $name)
+{
+    $pdo = pdoSqlConnect();
+    $query = "SELECT EXISTS (SELECT * FROM Menu WHERE StoreIdx = ? AND NAME = ?) AS exist;";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$storeIdx, $name]);
     //    $st->execute();
     $st->setFetchMode(PDO::FETCH_ASSOC);
     $res = $st->fetchAll();

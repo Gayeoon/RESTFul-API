@@ -545,6 +545,71 @@ try {
             $res->message = "테스트 성공";
             echo json_encode($res, JSON_NUMERIC_CHECK);
             break;
+
+        /*
+        * API No. 17
+        * API Name : Store Menu 추가 API
+        * 마지막 수정 날짜 : 20.08.18
+        */
+        case "createStoreMenu":
+            http_response_code(200);
+            if($req->StoreId == null) {
+                $res->isSuccess = FALSE;
+                $res->code = 200;
+                $res->message = "아이디 값이 누락되었습니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                break;
+            }
+
+            $StoreIdx = getStoreId($req->StoreId);
+
+            if(checkMenu($StoreIdx['StoreIdx'], $req->Name)){
+                $res->isSuccess = FALSE;
+                $res->code = 300;
+                $res->message = "해당 가게에 동일한 메뉴가 있습니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                break;
+            }
+
+            if($req->Name == null) {
+                $res->isSuccess = FALSE;
+                $res->code = 400;
+                $res->message = "메뉴 이름 값이 누락되었습니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                break;
+            }
+
+            if($req->Price == null) {
+                $res->isSuccess = FALSE;
+                $res->code = 500;
+                $res->message = "가격 값이 누락되었습니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                break;
+            }
+
+            createStoreMenu($StoreIdx['StoreIdx'], $req->Name, $req->Picture, $req->Price, $req->MenuOption);
+            $res->isSuccess = TRUE;
+            $res->code = 100;
+            $res->message = "테스트 성공";
+            echo json_encode($res, JSON_NUMERIC_CHECK);
+            break;
+
+        /*
+         * API No. 0
+         * API Name : 테스트 API
+         * 마지막 수정 날짜 : 19.04.29
+         */
+        case "getUsers":
+            http_response_code(200);
+
+            $keyword = $_GET['keyword'];
+
+            $res->result = getUsers($keyword);
+            $res->isSuccess = TRUE;
+            $res->code = 100;
+            $res->message = "테스트 성공";
+            echo json_encode($res, JSON_NUMERIC_CHECK);
+            break;
         /*
          * API No. 0
          * API Name : 테스트 Path Variable API
