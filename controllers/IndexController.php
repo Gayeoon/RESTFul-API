@@ -392,7 +392,7 @@ try {
         case "createUser":
             http_response_code(200);
 
-            if($req->UserId == null) {
+            if($req->userId == null) {
                 $res->isSuccess = FALSE;
                 $res->code = 300;
                 $res->message = "아이디 값이 누락되었습니다.";
@@ -400,7 +400,7 @@ try {
                 break;
             }
 
-                if(idCheck($req->UserId)){
+                if(idCheck($req->userId)){
                 $res->isSuccess = FALSE;
                 $res->code = 200;
                 $res->message = "이미 존재하는 ID입니다.";
@@ -408,7 +408,7 @@ try {
                 break;
             }
 
-            if($req->UserPw == null){
+            if($req->userPw == null){
                 $res->isSuccess = FALSE;
                 $res->code = 400;
                 $res->message = "비밀번호 값이 누락되었습니다.";
@@ -416,7 +416,7 @@ try {
                 break;
             }
 
-            if($req->Phone == null){
+            if($req->phone == null){
                 $res->isSuccess = FALSE;
                 $res->code = 500;
                 $res->message = "사용자 번호 값이 누락되었습니다.";
@@ -424,7 +424,7 @@ try {
                 break;
             }
 
-            if($req->Email == null){
+            if($req->email == null){
                 $res->isSuccess = FALSE;
                 $res->code = 600;
                 $res->message = "이메일 값이 누락되었습니다.";
@@ -432,9 +432,9 @@ try {
                 break;
             }
 
-            if ($req->Name == null){
-                $Name = $req->UserId;
-                createUser($req->UserId, $req->UserPw, $Name, $req->Phone, $req->Email, $req->MailReceiving, $req->SmsReceiving);
+            if ($req->name == null){
+                $name = $req->userId;
+                createUser($req->userId, $req->userPw, $name, $req->phone, $req->email, $req->mailReceiving, $req->smsReceiving);
                 $res->isSuccess = TRUE;
                 $res->code = 100;
                 $res->message = "테스트 성공";
@@ -456,7 +456,7 @@ try {
         */
         case "createStore":
             http_response_code(200);
-            if($req->StoreId == null) {
+            if($req->storeId == null) {
                 $res->isSuccess = FALSE;
                 $res->code = 300;
                 $res->message = "아이디 값이 누락되었습니다.";
@@ -464,14 +464,14 @@ try {
                 break;
             }
 
-            if(isValidStoreId($req->StoreId)){
+            if(isValidStoreId($req->storeId)){
                 $res->isSuccess = FALSE;
                 $res->code = 200;
                 $res->message = "이미 존재하는 ID입니다.";
                 echo json_encode($res, JSON_NUMERIC_CHECK);
                 break;
             }
-            if($req->StorePw == null){
+            if($req->storePw == null){
                 $res->isSuccess = FALSE;
                 $res->code = 400;
                 $res->message = "비밀번호 값이 누락되었습니다.";
@@ -479,7 +479,7 @@ try {
                 break;
             }
 
-            if($req->Phone == null){
+            if($req->phone == null){
                 $res->isSuccess = FALSE;
                 $res->code = 500;
                 $res->message = "Store 번호 값이 누락되었습니다.";
@@ -487,7 +487,7 @@ try {
                 break;
             }
 
-            if($req->Type == null){
+            if($req->type == null){
                 $res->isSuccess = FALSE;
                 $res->code = 600;
                 $res->message = "Type 값이 누락되었습니다.";
@@ -495,7 +495,7 @@ try {
                 break;
             }
 
-            if($req->Name == null){
+            if($req->name == null){
                 $res->isSuccess = FALSE;
                 $res->code = 700;
                 $res->message = "Store 이름 값이 누락되었습니다.";
@@ -503,7 +503,7 @@ try {
                 break;
             }
 
-            if($req->Type == null){
+            if($req->type == null){
                 $res->isSuccess = FALSE;
                 $res->code = 800;
                 $res->message = "Category 값이 누락되었습니다.";
@@ -511,7 +511,7 @@ try {
                 break;
             }
 
-            if($req->OpenTime == null || $req->CloseTime == null){
+            if($req->openTime == null || $req->closeTime == null){
                 $res->isSuccess = FALSE;
                 $res->code = 900;
                 $res->message = "Open / Close 시간 값이 누락되었습니다.";
@@ -519,10 +519,10 @@ try {
                 break;
             }
 
-            createStore($req->StoreId, $req->StorePw, $req->Name, $req->Type, $req->Category,
-                $req->OpenTime, $req->CloseTime, $req->IsDelivery, $req->IsOrder, $req->IsBmart,
-                $req->Represent, $req->Min, $req->Tip, $req->Phone, $req->Explan, $req->DeliveryTime,
-                $req->IsOpenList, $req->IsUltraCall, $req->Latitude, $req->Longitude);
+            createStore($req->storeId, $req->storePw, $req->name, $req->type, $req->category,
+                $req->openTime, $req->closeTime, $req->isDelivery, $req->isOrder, $req->isBmart,
+                $req->represent, $req->min, $req->tip, $req->phone, $req->explan, $req->deliveryTime,
+                $req->isOpenList, $req->isUltraCall, $req->latitude, $req->longitude);
             $res->isSuccess = TRUE;
             $res->code = 100;
             $res->message = "테스트 성공";
@@ -553,7 +553,7 @@ try {
         */
         case "createStoreMenu":
             http_response_code(200);
-            if($req->StoreId == null) {
+            if($req->storeId == null) {
                 $res->isSuccess = FALSE;
                 $res->code = 200;
                 $res->message = "아이디 값이 누락되었습니다.";
@@ -561,9 +561,17 @@ try {
                 break;
             }
 
-            $StoreIdx = getStoreId($req->StoreId);
+            if(!isValidStoreId($req->storeId)){
+                $res->isSuccess = FALSE;
+                $res->code = 600;
+                $res->message = "존재하지 않는 Store ID입니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                break;
+            }
 
-            if(checkMenu($StoreIdx['StoreIdx'], $req->Name)){
+            $storeIdx = getStoreId($req->storeId);
+
+            if(checkMenu($storeIdx['StoreIdx'], $req->name)){
                 $res->isSuccess = FALSE;
                 $res->code = 300;
                 $res->message = "해당 가게에 동일한 메뉴가 있습니다.";
@@ -571,7 +579,7 @@ try {
                 break;
             }
 
-            if($req->Name == null) {
+            if($req->name == null) {
                 $res->isSuccess = FALSE;
                 $res->code = 400;
                 $res->message = "메뉴 이름 값이 누락되었습니다.";
@@ -579,7 +587,7 @@ try {
                 break;
             }
 
-            if($req->Price == null) {
+            if($req->price == null) {
                 $res->isSuccess = FALSE;
                 $res->code = 500;
                 $res->message = "가격 값이 누락되었습니다.";
@@ -587,48 +595,7 @@ try {
                 break;
             }
 
-            createStoreMenu($StoreIdx['StoreIdx'], $req->Name, $req->Picture, $req->Price, $req->MenuOption);
-            $res->isSuccess = TRUE;
-            $res->code = 100;
-            $res->message = "테스트 성공";
-            echo json_encode($res, JSON_NUMERIC_CHECK);
-            break;
-
-        /*
-         * API No. 0
-         * API Name : 테스트 API
-         * 마지막 수정 날짜 : 19.04.29
-         */
-        case "getUsers":
-            http_response_code(200);
-
-            $keyword = $_GET['keyword'];
-
-            $res->result = getUsers($keyword);
-            $res->isSuccess = TRUE;
-            $res->code = 100;
-            $res->message = "테스트 성공";
-            echo json_encode($res, JSON_NUMERIC_CHECK);
-            break;
-        /*
-         * API No. 0
-         * API Name : 테스트 Path Variable API
-         * 마지막 수정 날짜 : 19.04.29
-         */
-        case "getUserDetail":
-            http_response_code(200);
-
-            $no = $vars["no"];
-
-            if(!isValidNo($no)){
-                $res->isSuccess = FALSE;
-                $res->code = 100;
-                $res->message = "유효하지 않은 no입니다.";
-                echo json_encode($res, JSON_NUMERIC_CHECK);
-                break;
-            }
-
-            $res->result = getUserDetail($vars["no"]);
+            createStoreMenu($storeIdx['StoreIdx'], $req->name, $req->picture, $req->price, $req->menuOption);
             $res->isSuccess = TRUE;
             $res->code = 100;
             $res->message = "테스트 성공";
