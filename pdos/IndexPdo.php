@@ -24,12 +24,12 @@ function getUserInfo($keyword)
 function getUser($keyword)
 {
     $pdo = pdoSqlConnect();
-    $query = "SELECT User.Name, User.Level, COUNT(*) AS Coupon
+    $query = "SELECT User.name, User.level, COUNT(*) AS coupon
         FROM User
         JOIN Coupon
-        ON User.UserIdx= Coupon.UserIdx AND Coupon.isUsed = 'N'
+        ON User.userIdx= Coupon.userIdx AND Coupon.isUsed = 'N'
         WHERE UserId = ? AND isDeleted = 'N'
-        GROUP BY User.UserIdx;";
+        GROUP BY User.userIdx;";
 
     $st = $pdo->prepare($query);
     $st->execute([$keyword]);
@@ -47,9 +47,9 @@ function getUserPoint($keyword)
 {
     $pdo = pdoSqlConnect();
 
-    $query = "SELECT Point, date_format(Date,'%Y-%m-%d') AS Date , EndDate, Point.IsDeleted As Used, Store
+    $query = "SELECT point, date_format(date,'%Y-%m-%d') AS date , endDate, Point.isDeleted As used, store
         FROM Point
-        JOIN User ON User.UserId = ? AND Point.UserIdx = User.UserIdx
+        JOIN User ON User.userId = ? AND Point.userIdx = User.userIdx
         ORDER BY Date DESC;
         ";
 
@@ -74,10 +74,10 @@ function getUserPointSum($keyword)
 {
     $pdo = pdoSqlConnect();
 
-    $query = "SELECT CONCAT(sum(Point), '원') AS Sum FROM Point
-        JOIN User ON UserId = ?
-        WHERE User.UserIdx = Point.UserIdx AND Point.IsDeleted >= 3
-        GROUP BY UserID;
+    $query = "SELECT CONCAT(sum(point), '원') AS sum FROM Point
+        JOIN User ON userId = ?
+        WHERE User.userIdx = Point.userIdx AND Point.isDeleted >= 3
+        GROUP BY userID;
         ";
 
     $st = $pdo->prepare($query);
@@ -97,21 +97,21 @@ function getUserChoose($keyword, $flag)
     $pdo = pdoSqlConnect();
 
     if($flag == 2) {
-        $query = "SELECT Store.Name, Store.Star, Store.Min, Store.Represent, Store.IsOpen, Store.IsOrder
+        $query = "SELECT Store.name, Store.star, Store.min, Store.represent, Store.isOpen, Store.isOrder
         FROM Choose
-        JOIN User on User.UserId = ?
+        JOIN User on User.userId = ?
         JOIN  Store
-        ON Choose.UserIdx = User.UserIdx AND Choose.StoreIdx = Store.StoreIdx;";
+        ON Choose.userIdx = User.userIdx AND Choose.storeIdx = Store.storeIdx;";
 
         $st = $pdo->prepare($query);
         $st->execute([$keyword]);
     }
     else {
-        $query = "SELECT Store.Name, Store.Star, Store.Min, Store.Represent, Store.IsOpen, Store.IsOrder
+        $query = "SELECT Store.name, Store.star, Store.min, Store.represent, Store.isOpen, Store.isOrder
         FROM OrderMenu
-        JOIN User on User.UserId = ?
+        JOIN User on User.userId = ?
         JOIN  Store
-        ON OrderMenu.UserIdx = User.UserIdx AND OrderMenu.Payment = ? AND OrderMenu.StoreIdx = Store.StoreIdx;";
+        ON OrderMenu.userIdx = User.userIdx AND OrderMenu.payment = ? AND OrderMenu.storeIdx = Store.storeIdx;";
 
         $st = $pdo->prepare($query);
         $st->execute([$keyword, $flag]);
@@ -131,9 +131,9 @@ function getUserChoose($keyword, $flag)
 function getStore($keyword)
 {
     $pdo = pdoSqlConnect();
-    $query = "SELECT Store.Name, Star, Min,  Type, CONCAT(FORMAT(Store.Tip , 0), '원') AS Tip, Store.Phone, Store.DeliveryTime, Explan
+    $query = "SELECT Store.name, star, min,  type, CONCAT(FORMAT(Store.tip , 0), '원') AS tip, Store.phone, Store.deliveryTime, explan
         FROM Store
-        WHERE Store.StoreID = ?;";
+        WHERE Store.storeID = ?;";
 
     $st = $pdo->prepare($query);
     $st->execute([$keyword]);
@@ -151,11 +151,11 @@ function getStore($keyword)
 function getStoreReview($keyword)
 {
     $pdo = pdoSqlConnect();
-    $query = "SELECT COUNT(*) AS Review, COUNT(Review.Comment) AS Comments
+    $query = "SELECT COUNT(*) AS review, COUNT(Review.comment) AS comments
         FROM Store
         JOIN Review
-        ON Review.StoreIdx = Store.StoreIdx
-        WHERE StoreId = ?;";
+        ON Review.storeIdx = Store.storeIdx
+        WHERE storeId = ?;";
 
     $st = $pdo->prepare($query);
     $st->execute([$keyword]);
@@ -172,11 +172,11 @@ function getStoreReview($keyword)
 function getStoreChoose($keyword)
 {
     $pdo = pdoSqlConnect();
-    $query = "SELECT COUNT(*) As Choose
+    $query = "SELECT COUNT(*) As choose
         FROM Store
         JOIN Choose
-        ON Choose.StoreIdx = Store.StoreIdx
-        WHERE StoreId = ?;";
+        ON Choose.storeIdx = Store.storeIdx
+        WHERE storeId = ?;";
 
     $st = $pdo->prepare($query);
     $st->execute([$keyword]);
@@ -194,10 +194,10 @@ function getStoreMenu($keyword)
 {
     $pdo = pdoSqlConnect();
 
-    $query = "SELECT Menu.Name AS MenuName, CONCAT(FORMAT(Menu.Price , 0), '원') AS Price, Menu.Picture, Menu.IsPossible, Menu.MenuNum
+    $query = "SELECT Menu.Name AS menuName, CONCAT(FORMAT(Menu.price , 0), '원') AS price, Menu.picture, Menu.isPossible, Menu.menuNum
         FROM Menu
         JOIN  Store
-        ON Store.StoreID = 'mmmm' AND Menu.StoreIdx = Store.StoreIdx;";
+        ON Store.storeID = 'mmmm' AND Menu.storeIdx = Store.storeIdx;";
 
     $st = $pdo->prepare($query);
     $st->execute([$keyword]);
@@ -215,24 +215,24 @@ function getUserOrder($keyword)
 {
     $pdo = pdoSqlConnect();
 
-    $query = "SELECT OrderMenu.Type,
-            CASE
-                WHEN TIMESTAMPDIFF(DAY, OrderMenu.Date, NOW()) < 1 THEN CONCAT('오늘')
-                WHEN TIMESTAMPDIFF(DAY, OrderMenu.Date, NOW()) <= 7 THEN CONCAT(TIMESTAMPDIFF(DAY, OrderMenu.Date, NOW()), '일 전')
-                ELSE CONCAT(date_format(OrderMenu.Date,'%m/%d'), ' (', SUBSTR( _UTF8'일월화수목금토', DAYOFWEEK(OrderMenu.Date), 1),')')
-        END AS Date,
-        Store.Category, Store.Name, OrderMenu.IsReview, CONCAT(FORMAT(Store.Tip , 0), '원') AS Tip,
-               GROUP_CONCAT(Menu.Name) AS MenuName, CONCAT(FORMAT(SUM(Menu.Price) , 0), '원') AS MenuPrice, Store.StoreId, OrderMenu.OrderNumber, OrderMenu.OrderIdx
-        FROM OrderMenu
-        JOIN User on User.UserId = 'judy'
-        JOIN  Store
-        ON OrderMenu.UserIdx = User.UserIdx AND OrderMenu.Type <= 1 AND OrderMenu.StoreIdx = Store.StoreIdx
-        JOIN  OrderMenuList
-        ON OrderMenu.OrderNumber = OrderMenuList.OrderNumber
-        JOIN  Menu
-        ON Menu.MenuNum = OrderMenuList.MenuNum
-        GROUP BY OrderMenu.Date, OrderMenu.OrderIdx
-        ORDER BY OrderMenu.Date DESC ;";
+    $query = "SELECT OrderMenu.type,
+                CASE
+                    WHEN TIMESTAMPDIFF(DAY, OrderMenu.date, NOW()) < 1 THEN CONCAT('오늘')
+                    WHEN TIMESTAMPDIFF(DAY, OrderMenu.date, NOW()) <= 7 THEN CONCAT(TIMESTAMPDIFF(DAY, OrderMenu.date, NOW()), '일 전')
+                    ELSE CONCAT(date_format(OrderMenu.date,'%m/%d'), '(', SUBSTR( _UTF8'일월화수목금토', DAYOFWEEK(OrderMenu.date), 1),')')
+            END AS date,
+            Store.category, Store.name, OrderMenu.isReview, CONCAT(FORMAT(Store.tip , 0), '원') AS tip,
+                   GROUP_CONCAT(Menu.name) AS menuName, CONCAT(FORMAT(SUM(Menu.price) , 0), '원') AS menuPrice, Store.storeId, OrderMenu.orderNumber, OrderMenu.orderIdx
+            FROM OrderMenu
+            JOIN User on User.userId = 'judy'
+            JOIN  Store
+            ON OrderMenu.userIdx = User.userIdx AND OrderMenu.type <= 1 AND OrderMenu.storeIdx = Store.storeIdx
+            JOIN  OrderMenuList
+            ON OrderMenu.orderNumber = OrderMenuList.orderNumber
+            JOIN  Menu
+            ON Menu.menuNum = OrderMenuList.menuNum
+            GROUP BY OrderMenu.date, OrderMenu.orderIdx
+            ORDER BY OrderMenu.date DESC ;";
 
     $st = $pdo->prepare($query);
     $st->execute([$keyword]);
@@ -251,14 +251,14 @@ function getUserOrderDetail($keyword)
     $pdo = pdoSqlConnect();
 
     $query = "SELECT
-       CASE
-           WHEN HOUR(OrderMenu.Date) < 12 THEN date_format(OrderMenu.Date,'%Y년 %m월 %d일 오전 %h:%i')
-           ELSE date_format(OrderMenu.Date,'%Y년 %m월 %d일 오후 %h:%i')
-       END AS Date,
-        OrderMenu.OrderNumber,  Store.Name, CONCAT(FORMAT(Store.Tip , 0), '원') AS Tip, OrderMenu.IsDelivered, Store.Phone, OrderMenu.Payment, OrderMenu.Address, Store.StoreId
+               CASE
+                   WHEN HOUR(OrderMenu.date) < 12 THEN date_format(OrderMenu.date,'%Y년 %m월 %d일 오전 %h:%i')
+                   ELSE date_format(OrderMenu.date,'%Y년 %m월 %d일 오후 %h:%i')
+               END AS date,
+        OrderMenu.orderNumber,  Store.name, CONCAT(FORMAT(Store.tip , 0), '원') AS tip, OrderMenu.isDelivered, Store.phone, OrderMenu.payment, OrderMenu.address, Store.storeId
         FROM OrderMenu
         JOIN  Store
-        ON OrderMenu.OrderNumber = ? AND OrderMenu.StoreIdx = Store.StoreIdx;";
+        ON OrderMenu.orderNumber = ? AND OrderMenu.storeIdx = Store.storeIdx;";
 
     $st = $pdo->prepare($query);
     $st->execute([$keyword]);
@@ -277,13 +277,13 @@ function getUserOrderMenu($keyword)
 {
     $pdo = pdoSqlConnect();
 
-    $query = "SELECT Menu.Name, CONCAT(FORMAT(Menu.Price , 0), '원') AS MenuPrice, OrderMenuList.MenuOption, OrderMenuList.MenuCnt
+    $query = "SELECT Menu.name, CONCAT(FORMAT(Menu.price , 0), '원') AS menuPrice, OrderMenuList.menuOption, OrderMenuList.menuCnt
         FROM OrderMenu
-        JOIN User on User.UserId = ?
+        JOIN User on User.userId = ?
         JOIN  OrderMenuList
-        ON OrderMenu.UserIdx = User.UserIdx AND OrderMenu.OrderNumber = 'B0QE01AX5S' AND OrderMenuList.OrderNumber = OrderMenu.OrderNumber
+        ON OrderMenu.userIdx = User.userIdx AND OrderMenu.orderNumber = 'B0QE01AX5S' AND OrderMenuList.orderNumber = OrderMenu.orderNumber
         JOIN  Menu
-        ON Menu.MenuNum = OrderMenuList.MenuNum;";
+        ON Menu.menuNum = OrderMenuList.menuNum;";
 
     $st = $pdo->prepare($query);
     $st->execute([$keyword]);
