@@ -15,28 +15,30 @@ error_reporting(E_ALL); ini_set("display_errors", 1);
 
 //Main Server API
 $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) {
-    $r->addRoute('GET', '/userInfo', ['IndexController', 'getUserInfo']);
-    $r->addRoute('GET', '/user', ['IndexController', 'getUser']);
-    $r->addRoute('GET', '/user/point', ['IndexController', 'getUserPoint']);
-    $r->addRoute('GET', '/user/point/sum', ['IndexController', 'getUserPointSum']);
-    $r->addRoute('GET', '/user/choose', ['IndexController', 'getUserChoose']);
-    $r->addRoute('GET', '/store', ['IndexController', 'getStore']);
-    $r->addRoute('GET', '/store/review', ['IndexController', 'getStoreReview']);
-    $r->addRoute('GET', '/store/choose', ['IndexController', 'getStoreChoose']);
-    $r->addRoute('GET', '/store/menu', ['IndexController', 'getStoreMenu']);
-    $r->addRoute('GET', '/user/order', ['IndexController', 'getUserOrder']);
-    $r->addRoute('GET', '/user/orderDetail', ['IndexController', 'getUserOrderDetail']);
-    $r->addRoute('GET', '/user/order/menu', ['IndexController', 'getUserOrderMenu']);
-    $r->addRoute('GET', '/user/review/count', ['IndexController', 'getUserReviewCount']);
-    $r->addRoute('GET', '/user/review', ['IndexController', 'getUserReview']);
+    $r->addRoute('GET', '/users', ['IndexController', 'getUsers']);
+
+    $r->addRoute('GET', '/user/{user_id}', ['IndexController', 'getUser']);
+    $r->addRoute('GET', '/user/{user_id}/point', ['IndexController', 'getUserPoint']);
+    $r->addRoute('GET', '/user/{user_id}/point/sum', ['IndexController', 'getUserPointSum']);
+    $r->addRoute('GET', '/user/{user_id}/choose', ['IndexController', 'getUserChoose']);
+    $r->addRoute('GET', '/store/{store_id}', ['IndexController', 'getStore']);
+    $r->addRoute('GET', '/store/{store_id}/review-cnt', ['IndexController', 'getStoreReview']);
+    $r->addRoute('GET', '/store/{store_id}/choose-cnt', ['IndexController', 'getStoreChoose']);
+    $r->addRoute('GET', '/store/{store_id}/menu', ['IndexController', 'getStoreMenu']);
+    $r->addRoute('GET', '/user/{user_id}/order', ['IndexController', 'getUserOrder']);
+    $r->addRoute('GET', '/user/{order_num}/order-detail', ['IndexController', 'getUserOrderDetail']);
+    $r->addRoute('GET', '/user/{user_id}/order/menu', ['IndexController', 'getUserOrderMenu']);
+    $r->addRoute('GET', '/user/{user_id}/review/count', ['IndexController', 'getUserReviewCount']);
+    $r->addRoute('GET', '/user/{user_id}/review', ['IndexController', 'getUserReview']);
 
     $r->addRoute('POST', '/user', ['IndexController', 'createUser']);
     $r->addRoute('POST', '/store', ['IndexController', 'createStore']);
     $r->addRoute('POST', '/store/menu', ['IndexController', 'createStoreMenu']);
 
+
     /* ******************   Test   ****************** */
     $r->addRoute('GET', '/', ['IndexController', 'index']);
-    $r->addRoute('GET', '/users', ['IndexController', 'getUsers']);
+   // $r->addRoute('GET', '/users', ['IndexController', 'getUsers']);
     $r->addRoute('GET', '/users/{no}', ['IndexController', 'getUserDetail']);
     $r->addRoute('GET', '/jwt', ['MainController', 'validateJwt']);
     $r->addRoute('POST', '/jwt', ['MainController', 'createJwt']);

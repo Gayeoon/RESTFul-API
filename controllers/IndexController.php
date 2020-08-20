@@ -55,7 +55,7 @@ try {
         case "getUser":
             http_response_code(200);
 
-            $keyword = $_GET['userId'];
+            $keyword = $vars["user_id"];
 
             if(!isValidId($keyword)){
                 $res->isSuccess = FALSE;
@@ -80,7 +80,7 @@ try {
         case "getUserPoint":
             http_response_code(200);
 
-            $keyword = $_GET['userId'];
+            $keyword = $vars['user_id'];
 
             if(!isValidId($keyword)){
                 $res->isSuccess = FALSE;
@@ -105,7 +105,7 @@ try {
         case "getUserPointSum":
             http_response_code(200);
 
-            $keyword = $_GET['userId'];
+            $keyword = $vars['user_id'];
 
             if(!isValidId($keyword)){
                 $res->isSuccess = FALSE;
@@ -130,7 +130,7 @@ try {
         case "getUserChoose":
             http_response_code(200);
 
-            $keyword = $_GET['userId'];
+            $keyword = $vars['user_id'];
             $flag = $_GET['flag'];
 
             if(!isValidId($keyword)){
@@ -164,7 +164,7 @@ try {
         case "getStore":
             http_response_code(200);
 
-            $keyword = $_GET['storeId'];
+            $keyword = $vars['store_id'];
 
             if(!isValidStoreId($keyword)){
                 $res->isSuccess = FALSE;
@@ -189,7 +189,7 @@ try {
         case "getStoreReview":
             http_response_code(200);
 
-            $keyword = $_GET['storeId'];
+            $keyword = $vars['store_id'];
 
             if(!isValidStoreId($keyword)){
                 $res->isSuccess = FALSE;
@@ -214,7 +214,7 @@ try {
         case "getStoreChoose":
             http_response_code(200);
 
-            $keyword = $_GET['storeId'];
+            $keyword = $vars['store_id'];
 
             if(!isValidStoreId($keyword)){
                 $res->isSuccess = FALSE;
@@ -239,7 +239,7 @@ try {
         case "getStoreMenu":
             http_response_code(200);
 
-            $keyword = $_GET['storeId'];
+            $keyword = $vars['store_id'];
 
             if(!isValidStoreId($keyword)){
                 $res->isSuccess = FALSE;
@@ -265,7 +265,7 @@ try {
         case "getUserOrder":
             http_response_code(200);
 
-            $keyword = $_GET['userId'];
+            $keyword = $vars['user_id'];
 
             if(!isValidId($keyword)){
                 $res->isSuccess = FALSE;
@@ -290,7 +290,7 @@ try {
         case "getUserOrderDetail":
             http_response_code(200);
 
-            $keyword = $_GET['orderNum'];
+            $keyword = $vars['order_num'];
 
             if(!isValidNumber($keyword)){
                 $res->isSuccess = FALSE;
@@ -316,7 +316,7 @@ try {
         case "getUserOrderMenu":
             http_response_code(200);
 
-            $keyword = $_GET['userId'];
+            $keyword = $vars['user_id'];
 
             if(!isValidId($keyword)){
                 $res->isSuccess = FALSE;
@@ -342,7 +342,7 @@ try {
         case "getUserReviewCount":
             http_response_code(200);
 
-            $keyword = $_GET['userId'];
+            $keyword= $vars['user_id'];
 
             if(!isValidId($keyword)){
                 $res->isSuccess = FALSE;
@@ -367,7 +367,7 @@ try {
         case "getUserReview":
             http_response_code(200);
 
-            $keyword = $_GET['userId'];
+            $keyword = $vars['user_id'];
 
             if(!isValidId($keyword)){
                 $res->isSuccess = FALSE;
