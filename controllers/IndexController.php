@@ -27,7 +27,7 @@ try {
          * API Name : User 모든 정보 출력 API
          * 마지막 수정 날짜 : 20.08.14
          */
-        case "getUserInfo":
+        case "getUsers":
             http_response_code(200);
 
             $keyword = $_GET['userId'];
@@ -40,7 +40,7 @@ try {
                 break;
             }
 
-            $res->result = getUserInfo($keyword);
+            $res->result = getUsers($keyword);
             $res->isSuccess = TRUE;
             $res->code = 100;
             $res->message = "정보 출력 성공";
@@ -595,7 +595,7 @@ try {
                 break;
             }
 
-            createStoreMenu($storeIdx['StoreIdx'], $req->name, $req->picture, $req->price, $req->menuOption);
+            createStoreMenu($storeIdx['storeIdx'], $req->name, $req->picture, $req->price, $req->menuOption);
             $res->isSuccess = TRUE;
             $res->code = 100;
             $res->message = "테스트 성공";

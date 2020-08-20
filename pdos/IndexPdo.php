@@ -1,7 +1,7 @@
 <?php
 
 // API NO. 1 User 모든 정보 출력
-function getUserInfo($keyword)
+function getUsers($keyword)
 {
     $pdo = pdoSqlConnect();
     $query = "SELECT * FROM User WHERE UserId = ? AND IsDeleted = 'N';";
@@ -306,10 +306,10 @@ function getUserReviewCount($keyword)
 {
     $pdo = pdoSqlConnect();
 
-    $query = "SELECT COUNT(*) AS MyReview
+    $query = "SELECT COUNT(*) AS myReview
         FROM Review
-        JOIN User on User.UserId = ?
-        WHERE Review.UserIdx = User.UserIdx;";
+        JOIN User on User.userId = ?
+        WHERE Review.userIdx = User.userIdx;";
 
     $st = $pdo->prepare($query);
     $st->execute([$keyword]);
@@ -327,25 +327,25 @@ function getUserReview($keyword)
 {
     $pdo = pdoSqlConnect();
 
-    $query = "SELECT Review.Contents, Review.Tag, GROUP_CONCAT(ReviewPicture.Picture SEPARATOR '|') AS Picture,
+    $query = "SELECT Review.contents, Review.tag, GROUP_CONCAT(ReviewPicture.picture SEPARATOR '|') AS picture,
             CASE
-                WHEN TIMESTAMPDIFF(DAY, Review.Date, NOW()) < 1 THEN CONCAT('방금 전')
-                WHEN TIMESTAMPDIFF(DAY, Review.Date, NOW()) <= 1 THEN CONCAT('어제')
-                WHEN TIMESTAMPDIFF(DAY, Review.Date, NOW()) <= 7 THEN CONCAT('이번 주')
-                WHEN TIMESTAMPDIFF(DAY, Review.Date, NOW()) <= 29 THEN CONCAT(CAST(TIMESTAMPDIFF(DAY, Review.Date, NOW()) / 7 as unsigned), '주 전')
-                WHEN TIMESTAMPDIFF(MONTH , Review.Date, NOW()) <= 1 THEN CONCAT('지난 달')
-                WHEN TIMESTAMPDIFF(MONTH , Review.Date, NOW()) < 12 THEN CONCAT(TIMESTAMPDIFF(MONTH , Review.Date, NOW()), '개월 전')
+                WHEN TIMESTAMPDIFF(DAY, Review.date, NOW()) < 1 THEN CONCAT('방금 전')
+                WHEN TIMESTAMPDIFF(DAY, Review.date, NOW()) <= 1 THEN CONCAT('어제')
+                WHEN TIMESTAMPDIFF(DAY, Review.date, NOW()) <= 7 THEN CONCAT('이번 주')
+                WHEN TIMESTAMPDIFF(DAY, Review.date, NOW()) <= 29 THEN CONCAT(CAST(TIMESTAMPDIFF(DAY, Review.date, NOW()) / 7 as unsigned), '주 전')
+                WHEN TIMESTAMPDIFF(MONTH , Review.date, NOW()) <= 1 THEN CONCAT('지난 달')
+                WHEN TIMESTAMPDIFF(MONTH , Review.date, NOW()) < 12 THEN CONCAT(TIMESTAMPDIFF(MONTH , Review.date, NOW()), '개월 전')
                 ELSE CONCAT('작년')
-            END AS Date
-             , Review.Star, Store.Name, Store.StoreId
+            END AS date
+             , Review.star, Store.name, Store.storeId
         FROM Review
-        JOIN User on User.UserId = 'judy'
+        JOIN User on User.userId = 'judy'
         JOIN  Store
-        ON Review.UserIdx = User.UserIdx AND Review.isDeleted = 'N' AND Review.StoreIdx = Store.StoreIdx
+        ON Review.userIdx = User.userIdx AND Review.isDeleted = 'N' AND Review.storeIdx = Store.storeIdx
         JOIN ReviewPicture
-        ON Review.ReviewIdx = ReviewPicture.ReviewIdx
-        GROUP BY Review.ReviewIdx, Review.Date
-        ORDER BY Review.Date DESC;";
+        ON Review.reviewIdx = ReviewPicture.reviewIdx
+        GROUP BY Review.reviewIdx, Review.date
+        ORDER BY Review.date DESC;";
 
     $st = $pdo->prepare($query);
     $st->execute([$keyword]);
@@ -366,7 +366,7 @@ function getUserReview($keyword)
 // API NO. 15 User 회원가입
 function createUser($UserId, $UserPw, $Name, $Phone, $Email, $MailReceiving, $SmsReceiving){
     $pdo = pdoSqlConnect();
-    $query = "INSERT INTO User (UserId, UserPw, Name, Phone, Email, Level, MailReceiving, SmsReceiving)
+    $query = "INSERT INTO User (userId, userPw, name, phone, email, level, mailReceiving, smsReceiving)
  VALUES (?,?,?,?,?,0,?,?);";
 
     $st = $pdo->prepare($query);
@@ -382,10 +382,10 @@ function createStore($StoreId, $StorePw, $Name, $Type, $Category,
                     $Represent, $Min, $Tip, $Phone, $Explan, $DeliveryTime,
                     $IsOpenList, $IsUltraCall, $Latitude, $Longitude){
     $pdo = pdoSqlConnect();
-    $query = "INSERT INTO Store (StoreId, StorePw, Name, Type, Category, IsDeleted,
-                    OpenTime, CloseTime, IsOpen, IsDelivery, IsOrder, IsBmart,
-                    Represent, Min, Tip, Phone, Explan, DeliveryTime,
-                    IsOpenList, IsUltraCall, Latitude, Longitude)
+    $query = "INSERT INTO Store (storeId, storePw, name, type, category, isDeleted,
+                    openTime, closeTime, isOpen, isDelivery, isOrder, isBmart,
+                    represent, min, tip, phone, explan, deliveryTime,
+                    isOpenList, isUltraCall, latitude, longitude)
  VALUES (?, ?, ?, ?, ?,'N',?, ?, 'Y', ?,?,?,?,?, ?,?,?,?,?,?,?,?);";
 
     $st = $pdo->prepare($query);
@@ -401,7 +401,7 @@ function createStore($StoreId, $StorePw, $Name, $Type, $Category,
 // API NO. 17 Store 메뉴 추가
 function createStoreMenu($StoreIdx, $Name, $Picture, $Price, $MenuOption){
     $pdo = pdoSqlConnect();
-    $query = "INSERT INTO Menu (StoreIdx, Name, Picture, Price, IsPossible, MenuOption)
+    $query = "INSERT INTO Menu (storeIdx, name, picture, price, isPossible, menuOption)
  VALUES (?, ?, ?, ?, 'Y', ?);";
 
     $st = $pdo->prepare($query);
@@ -415,7 +415,7 @@ function createStoreMenu($StoreIdx, $Name, $Picture, $Price, $MenuOption){
 function getStoreId($keyword)
 {
     $pdo = pdoSqlConnect();
-    $query = "SELECT StoreIdx FROM Store WHERE StoreId = 'mmmm'";
+    $query = "SELECT storeIdx FROM Store WHERE storeId = 'mmmm'";
 
     $st = $pdo->prepare($query);
     $st->execute([$keyword]);
@@ -432,7 +432,7 @@ function getStoreId($keyword)
 function isValidId($keyword)
 {
     $pdo = pdoSqlConnect();
-    $query = "SELECT EXISTS (SELECT * FROM User WHERE UserId = ? AND IsDeleted = 'N') AS exist;";
+    $query = "SELECT EXISTS (SELECT * FROM User WHERE userId = ? AND isDeleted = 'N') AS exist;";
 
     $st = $pdo->prepare($query);
     $st->execute([$keyword]);
@@ -450,7 +450,7 @@ function isValidId($keyword)
 function isValidStoreId($keyword)
 {
     $pdo = pdoSqlConnect();
-    $query = "SELECT EXISTS (SELECT * FROM Store WHERE StoreId = ? AND IsDeleted = 'N') AS exist;";
+    $query = "SELECT EXISTS (SELECT * FROM Store WHERE storeId = ? AND isDeleted = 'N') AS exist;";
 
     $st = $pdo->prepare($query);
     $st->execute([$keyword]);
@@ -468,7 +468,7 @@ function isValidStoreId($keyword)
 function isValidNumber($keyword)
 {
     $pdo = pdoSqlConnect();
-    $query = "SELECT EXISTS (SELECT * FROM OrderMenu WHERE OrderNumber = ?) AS exist;";
+    $query = "SELECT EXISTS (SELECT * FROM OrderMenu WHERE orderNumber = ?) AS exist;";
 
     $st = $pdo->prepare($query);
     $st->execute([$keyword]);
@@ -486,7 +486,7 @@ function isValidNumber($keyword)
 function idCheck($keyword)
 {
     $pdo = pdoSqlConnect();
-    $query = "SELECT EXISTS (SELECT * FROM User WHERE UserId = ?) AS exist;";
+    $query = "SELECT EXISTS (SELECT * FROM User WHERE userId = ?) AS exist;";
 
     $st = $pdo->prepare($query);
     $st->execute([$keyword]);
@@ -504,7 +504,7 @@ function idCheck($keyword)
 function checkMenu($storeIdx, $name)
 {
     $pdo = pdoSqlConnect();
-    $query = "SELECT EXISTS (SELECT * FROM Menu WHERE StoreIdx = ? AND NAME = ?) AS exist;";
+    $query = "SELECT EXISTS (SELECT * FROM Menu WHERE storeIdx = ? AND NAME = ?) AS exist;";
 
     $st = $pdo->prepare($query);
     $st->execute([$storeIdx, $name]);
