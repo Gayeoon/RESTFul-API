@@ -39,7 +39,7 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
     $r->addRoute('POST', '/user', ['IndexController', 'createUser']);
     $r->addRoute('POST', '/store', ['IndexController', 'createStore']);
     $r->addRoute('POST', '/store/menu', ['IndexController', 'createStoreMenu']);
-
+    $r->addRoute('POST', '/user/review', ['IndexController', 'createReview']);
 
     /* ******************   Test   ****************** */
     $r->addRoute('GET', '/', ['IndexController', 'index']);

@@ -411,6 +411,34 @@ function createStoreMenu($StoreIdx, $Name, $Picture, $Price, $MenuOption){
     $pdo = null;
 }
 
+// API NO. 18 리뷰 추가
+function createReview($UserIdx, $StoreIdx, $Tag, $Contents, $Star, $OrderNumber){
+
+    $pdo = pdoSqlConnect();
+    $query = "INSERT INTO Review (userIdx, storeIdx, tag, contents, isDeleted, star, comment, commentIdx, orderNumber)
+ VALUES (?, ?, ?, ?, 'N', ?, null, null, ?);";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$UserIdx, $StoreIdx, $Tag, $Contents, $Star, $OrderNumber]);
+
+    $st = null;
+    $pdo = null;
+}
+
+// API NO. 18 리뷰 사진 추가
+function createReviewPicture($ReviewIdx, $Picture){
+
+    $pdo = pdoSqlConnect();
+    $query = "INSERT INTO ReviewPicture (reviewIdx, picture)
+ VALUES (?, ?);";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$ReviewIdx, $Picture]);
+
+    $st = null;
+    $pdo = null;
+}
+
 // API NO. 20 User 보유 쿠폰 조회
 function getUserCoupon($keyword)
 {
@@ -513,11 +541,11 @@ function getUserReviewDetail($keyword)
     return $res;
 }
 
-// Store Id 가져오기
-function getStoreId($keyword)
+// User Idx 가져오기
+function getUserId($keyword)
 {
     $pdo = pdoSqlConnect();
-    $query = "SELECT storeIdx FROM Store WHERE storeId = 'mmmm'";
+    $query = "SELECT userIdx FROM User WHERE userId = ?";
 
     $st = $pdo->prepare($query);
     $st->execute([$keyword]);
@@ -528,6 +556,79 @@ function getStoreId($keyword)
     $pdo = null;
 
     return $res[0];
+}
+
+// Store Idx 가져오기
+function getStoreId($keyword)
+{
+    $pdo = pdoSqlConnect();
+    $query = "SELECT storeIdx FROM Store WHERE storeId = ?";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$keyword]);
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    return $res[0];
+}
+
+// Review Idx 가져오기
+function getReviewIdx($orderNum)
+{
+    $pdo = pdoSqlConnect();
+    $query = "SELECT reviewIdx
+        FROM Review
+        WHERE orderNumber = ?";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$orderNum]);
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    return $res[0];
+}
+
+// Review Idx 가져오기
+function getOrderNum($orderNum)
+{
+    $pdo = pdoSqlConnect();
+    $query = "SELECT userIdx, storeIdx
+        FROM OrderMenu
+        WHERE orderNumber = ?";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$orderNum]);
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    return $res[0];
+}
+
+// ID 체크
+function isValidOrderNum($keyword)
+{
+    $pdo = pdoSqlConnect();
+    $query = "SELECT EXISTS (SELECT * FROM Review WHERE orderNumber = ? AND isDeleted = 'N') AS exist;";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$keyword]);
+    //    $st->execute();
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+    //echo json_encode($res);
+    return intval($res[0]['exist']);
 }
 
 // ID 체크

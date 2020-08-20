@@ -603,6 +603,61 @@ try {
             break;
 
         /*
+        * API No. 18
+        * API Name : User 리뷰쓰기 API
+        * 마지막 수정 날짜 : 20.08.20
+        */
+        case "createReview":
+            http_response_code(200);
+
+            if($req->orderNum == null) {
+                $res->isSuccess = FALSE;
+                $res->code = 200;
+                $res->message = "주문 번호 값이 누락되었습니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                break;
+            }
+
+            if(isValidOrderNum($req->orderNum)){
+                $res->isSuccess = FALSE;
+                $res->code = 300;
+                $res->message = "이미 리뷰가 존재합니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                break;
+            }
+
+            $temp = getOrderNum($req->orderNum);
+            $userIdx = $temp['userIdx'];
+            $storeIdx = $temp['storeIdx'];
+
+
+            if($req->contents == null) {
+                $res->isSuccess = FALSE;
+                $res->code = 400;
+                $res->message = "contents 값이 누락되었습니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                break;
+            }
+
+            createReview($userIdx,  $storeIdx, $req->tag, $req->contents, $req->star, $req->orderNum);
+
+            if($req->picture != null){
+                $reviewIdx = getReviewIdx($req->orderNum);
+
+                for($t=0; $t<sizeof($req->picture); $t++)
+                {
+                    createReviewPicture($reviewIdx['reviewIdx'], $req->picture[$t]);
+                }
+
+            }
+
+            $res->isSuccess = TRUE;
+            $res->code = 100;
+            $res->message = "테스트 성공";
+            echo json_encode($res, JSON_NUMERIC_CHECK);
+            break;
+
+        /*
         * API No. 20
         * API Name : User 보유 쿠폰 조회 API
         * 마지막 수정 날짜 : 20.08.20
