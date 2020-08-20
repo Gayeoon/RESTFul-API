@@ -337,9 +337,9 @@ function getUserReview($keyword)
                 WHEN TIMESTAMPDIFF(MONTH , Review.date, NOW()) < 12 THEN CONCAT(TIMESTAMPDIFF(MONTH , Review.date, NOW()), '개월 전')
                 ELSE CONCAT('작년')
             END AS date
-             , Review.star, Store.name, Store.storeId
+             , Review.star, Store.name, Store.storeId, Review.reviewIdx
         FROM Review
-        JOIN User on User.userId = 'judy'
+        JOIN User on User.userId = ?
         JOIN  Store
         ON Review.userIdx = User.userIdx AND Review.isDeleted = 'N' AND Review.storeIdx = Store.storeIdx
         JOIN ReviewPicture
@@ -409,6 +409,45 @@ function createStoreMenu($StoreIdx, $Name, $Picture, $Price, $MenuOption){
 
     $st = null;
     $pdo = null;
+}
+
+// API NO. 29 User 리뷰 상세 조회
+function getUserReviewDetail($keyword)
+{
+    $pdo = pdoSqlConnect();
+
+    $query = "SELECT Review.contents, Review.tag, GROUP_CONCAT(ReviewPicture.picture SEPARATOR '|') AS picture,
+                    CASE
+                        WHEN TIMESTAMPDIFF(DAY, Review.date, NOW()) < 1 THEN CONCAT('방금 전')
+                        WHEN TIMESTAMPDIFF(DAY, Review.date, NOW()) <= 1 THEN CONCAT('어제')
+                        WHEN TIMESTAMPDIFF(DAY, Review.date, NOW()) <= 7 THEN CONCAT('이번 주')
+                        WHEN TIMESTAMPDIFF(DAY, Review.date, NOW()) <= 29 THEN CONCAT(CAST(TIMESTAMPDIFF(DAY, Review.date, NOW()) / 7 as unsigned), '주 전')
+                        WHEN TIMESTAMPDIFF(MONTH , Review.date, NOW()) <= 1 THEN CONCAT('지난 달')
+                        WHEN TIMESTAMPDIFF(MONTH , Review.date, NOW()) < 12 THEN CONCAT(TIMESTAMPDIFF(MONTH , Review.date, NOW()), '개월 전')
+                        ELSE CONCAT('작년')
+                    END AS date
+                     , Review.star, Store.name, Store.storeId, Review.reviewIdx
+                FROM Review
+                JOIN  Store
+                ON Review.reviewIdx = ? AND Review.isDeleted = 'N' AND Review.storeIdx = Store.storeIdx
+                JOIN ReviewPicture
+                ON Review.reviewIdx = ReviewPicture.reviewIdx
+                GROUP BY Review.reviewIdx, Review.date;";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$keyword]);
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    for($i=0; $i<sizeof($res); $i++)
+    {
+        $res[$i] = array_filter($res[$i]);
+    }
+
+    return $res;
 }
 
 // Store Id 가져오기
@@ -508,6 +547,24 @@ function checkMenu($storeIdx, $name)
 
     $st = $pdo->prepare($query);
     $st->execute([$storeIdx, $name]);
+    //    $st->execute();
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+    //echo json_encode($res);
+    return intval($res[0]['exist']);
+}
+
+// OrderNumber 유효성 체크
+function isValidReviewIdx($keyword)
+{
+    $pdo = pdoSqlConnect();
+    $query = "SELECT EXISTS (SELECT * FROM Review WHERE reviewIdx = ? AND isDeleted = 'N') AS exist;";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$keyword]);
     //    $st->execute();
     $st->setFetchMode(PDO::FETCH_ASSOC);
     $res = $st->fetchAll();

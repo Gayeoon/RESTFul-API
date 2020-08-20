@@ -602,6 +602,29 @@ try {
             echo json_encode($res, JSON_NUMERIC_CHECK);
             break;
 
+        /*
+        * API No. 29
+        * API Name : User 리뷰 목록 조회 API
+        * 마지막 수정 날짜 : 20.08.17
+        */
+        case "getUserReviewDetail":
+            http_response_code(200);
+
+            $keyword = $vars['review_idx'];
+            if(!isValidReviewIdx($keyword)){
+                $res->isSuccess = FALSE;
+                $res->code = 200;
+                $res->message = "유효하지 않은 리뷰 Idx입니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                break;
+            }
+
+            $res->result = getUserReviewDetail($keyword);
+            $res->isSuccess = TRUE;
+            $res->code = 100;
+            $res->message = "정보 출력 성공";
+            echo json_encode($res, JSON_NUMERIC_CHECK);
+            break;
 
     }
 } catch (\Exception $e) {
