@@ -605,7 +605,7 @@ try {
         /*
         * API No. 20
         * API Name : User 보유 쿠폰 조회 API
-        * 마지막 수정 날짜 : 20.08.14
+        * 마지막 수정 날짜 : 20.08.20
         */
         case "getUserCoupon":
             http_response_code(200);
@@ -626,6 +626,57 @@ try {
             $res->message = "정보 출력 성공";
             echo json_encode($res, JSON_NUMERIC_CHECK);
             break;
+
+        /*
+        * API No. 21
+        * API Name : User 이번달 누적 주문 횟수 API
+        * 마지막 수정 날짜 : 20.08.20
+        */
+        case "getUserOrderCount":
+            http_response_code(200);
+
+            $keyword = $vars['user_id'];
+
+            if(!isValidId($keyword)){
+                $res->isSuccess = FALSE;
+                $res->code = 200;
+                $res->message = "유효하지 않은 ID입니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                break;
+            }
+
+            $res->result = getUserOrderCount($keyword);
+            $res->isSuccess = TRUE;
+            $res->code = 100;
+            $res->message = "정보 출력 성공";
+            echo json_encode($res, JSON_NUMERIC_CHECK);
+            break;
+
+        /*
+        * API No. 28
+        * API Name : 해당 단어가 포함되는 가게 검색 API
+        * 마지막 수정 날짜 : 20.08.20
+        */
+        case "getStoreWord":
+            http_response_code(200);
+
+            $keyword = $_GET['word'];
+
+            if($keyword == null){
+                $res->isSuccess = FALSE;
+                $res->code = 200;
+                $res->message = "키워드가 입력되지 않았습니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                break;
+            }
+
+            $res->result = getStoreWord($keyword);
+            $res->isSuccess = TRUE;
+            $res->code = 100;
+            $res->message = "정보 출력 성공";
+            echo json_encode($res, JSON_NUMERIC_CHECK);
+            break;
+
 
         /*
         * API No. 29

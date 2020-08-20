@@ -16,6 +16,7 @@ error_reporting(E_ALL); ini_set("display_errors", 1);
 //Main Server API
 $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) {
     $r->addRoute('GET', '/users', ['IndexController', 'getUsers']);
+    $r->addRoute('GET', '/store', ['IndexController', 'getStoreWord']);
 
     $r->addRoute('GET', '/user/{user_id}', ['IndexController', 'getUser']);
     $r->addRoute('GET', '/user/{user_id}/point', ['IndexController', 'getUserPoint']);
@@ -32,6 +33,7 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
     $r->addRoute('GET', '/user/{user_id}/review', ['IndexController', 'getUserReview']);
     $r->addRoute('GET', '/user/review/{review_idx}', ['IndexController', 'getUserReviewDetail']);
     $r->addRoute('GET', '/user/{user_id}/coupon', ['IndexController', 'getUserCoupon']);
+    $r->addRoute('GET', '/user/{user_id}/order-cnt', ['IndexController', 'getUserOrderCount']);
 
 
     $r->addRoute('POST', '/user', ['IndexController', 'createUser']);

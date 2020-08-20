@@ -97,7 +97,7 @@ function getUserChoose($keyword, $flag)
     $pdo = pdoSqlConnect();
 
     if($flag == 2) {
-        $query = "SELECT Store.name, Store.star, Store.min, Store.represent, Store.isOpen, Store.isOrder
+        $query = "SELECT Store.name, Store.star, Store.min, Store.represent, Store.isOpen, Store.isOrder, Store.storeId
         FROM Choose
         JOIN User on User.userId = ?
         JOIN  Store
@@ -107,7 +107,7 @@ function getUserChoose($keyword, $flag)
         $st->execute([$keyword]);
     }
     else {
-        $query = "SELECT Store.name, Store.star, Store.min, Store.represent, Store.isOpen, Store.isOrder
+        $query = "SELECT Store.name, Store.star, Store.min, Store.represent, Store.isOpen, Store.isOrder, Store.storeId
         FROM OrderMenu
         JOIN User on User.userId = ?
         JOIN  Store
@@ -420,6 +420,48 @@ function getUserCoupon($keyword)
         FROM Coupon
         JOIN User ON User.userId = ? AND User.userIdx = Coupon.userIdx
         WHERE Coupon.isUsed = 'N';";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$keyword]);
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    return $res;
+}
+
+// API NO. 21 User 이번달 누적 주문 횟수
+function getUserOrderCount($keyword)
+{
+    $pdo = pdoSqlConnect();
+
+    $query = "SELECT COUNT(*) AS orderCount, User.level
+        FROM OrderMenu
+        JOIN User ON User.userId = ? AND User.userIdx = OrderMenu.userIdx
+        WHERE TIMESTAMPDIFF(MONTH , OrderMenu.date, NOW()) < 1
+        GROUP BY User.userIdx;";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$keyword]);
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    return $res[0];
+}
+
+// API NO. 28 가게 키워드 검색
+function getStoreWord($keyword)
+{
+    $pdo = pdoSqlConnect();
+
+    $query = "SELECT Store.name, Store.star, Store.min, Store.represent, Store.isOpen, Store.isOrder
+        FROM Store
+        WHERE Store.name LIKE CONCAT('%', ?, '%');";
 
     $st = $pdo->prepare($query);
     $st->execute([$keyword]);
