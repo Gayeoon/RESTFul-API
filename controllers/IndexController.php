@@ -603,6 +603,31 @@ try {
             break;
 
         /*
+        * API No. 20
+        * API Name : User 보유 쿠폰 조회 API
+        * 마지막 수정 날짜 : 20.08.14
+        */
+        case "getUserCoupon":
+            http_response_code(200);
+
+            $keyword = $vars['user_id'];
+
+            if(!isValidId($keyword)){
+                $res->isSuccess = FALSE;
+                $res->code = 200;
+                $res->message = "유효하지 않은 ID입니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                break;
+            }
+
+            $res->result = getUserCoupon($keyword);
+            $res->isSuccess = TRUE;
+            $res->code = 100;
+            $res->message = "정보 출력 성공";
+            echo json_encode($res, JSON_NUMERIC_CHECK);
+            break;
+
+        /*
         * API No. 29
         * API Name : User 리뷰 목록 조회 API
         * 마지막 수정 날짜 : 20.08.17
@@ -625,7 +650,6 @@ try {
             $res->message = "정보 출력 성공";
             echo json_encode($res, JSON_NUMERIC_CHECK);
             break;
-
     }
 } catch (\Exception $e) {
     return getSQLErrorException($errorLogs, $e, $req);

@@ -411,6 +411,27 @@ function createStoreMenu($StoreIdx, $Name, $Picture, $Price, $MenuOption){
     $pdo = null;
 }
 
+// API NO. 20 User 보유 쿠폰 조회
+function getUserCoupon($keyword)
+{
+    $pdo = pdoSqlConnect();
+
+    $query = "SELECT couponIdx, price, coupon, date_format(startDate,'%Y.%m.%d') AS startDate, date_format(endDate,'%Y.%m.%d') AS endDate
+        FROM Coupon
+        JOIN User ON User.userId = ? AND User.userIdx = Coupon.userIdx
+        WHERE Coupon.isUsed = 'N';";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$keyword]);
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    return $res;
+}
+
 // API NO. 29 User 리뷰 상세 조회
 function getUserReviewDetail($keyword)
 {

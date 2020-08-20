@@ -31,6 +31,7 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
     $r->addRoute('GET', '/user/{user_id}/review/count', ['IndexController', 'getUserReviewCount']);
     $r->addRoute('GET', '/user/{user_id}/review', ['IndexController', 'getUserReview']);
     $r->addRoute('GET', '/user/review/{review_idx}', ['IndexController', 'getUserReviewDetail']);
+    $r->addRoute('GET', '/user/{user_id}/coupon', ['IndexController', 'getUserCoupon']);
 
 
     $r->addRoute('POST', '/user', ['IndexController', 'createUser']);
