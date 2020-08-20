@@ -439,6 +439,26 @@ function createReviewPicture($ReviewIdx, $Picture){
     $pdo = null;
 }
 
+// API NO. 19 쿠폰 발급
+function createCoupon($userIdx, $price, $coupon, $endDate, $storeIdx){
+    $pdo = pdoSqlConnect();
+    if($storeIdx == 0){
+        $query = "INSERT INTO Coupon (userIdx, price, coupon, isUsed, endDate, storeIdx)
+        VALUES (?, ?, ?, 'N', ?, 0);";
+
+        $st = $pdo->prepare($query);
+        $st->execute([$userIdx, $price, $coupon, $endDate]);
+    }else {
+        $query = "INSERT INTO Coupon (userIdx, price, coupon, isUsed, endDate, storeIdx)
+        VALUES (?, ?, ?, 'N', ?, ?);";
+
+        $st = $pdo->prepare($query);
+        $st->execute([$userIdx, $price, $coupon, $endDate, $storeIdx]);
+    }
+    $st = null;
+    $pdo = null;
+}
+
 // API NO. 20 User 보유 쿠폰 조회
 function getUserCoupon($keyword)
 {

@@ -530,23 +530,6 @@ try {
             break;
 
         /*
-         * API No. 0
-         * API Name : 테스트 API
-         * 마지막 수정 날짜 : 19.04.29
-         */
-        case "getUsers":
-            http_response_code(200);
-
-            $keyword = $_GET['keyword'];
-
-            $res->result = getUsers($keyword);
-            $res->isSuccess = TRUE;
-            $res->code = 100;
-            $res->message = "테스트 성공";
-            echo json_encode($res, JSON_NUMERIC_CHECK);
-            break;
-
-        /*
         * API No. 17
         * API Name : Store Menu 추가 API
         * 마지막 수정 날짜 : 20.08.18
@@ -657,6 +640,52 @@ try {
             echo json_encode($res, JSON_NUMERIC_CHECK);
             break;
 
+        /*
+       * API No. 19
+       * API Name : User 쿠폰발급 API
+       * 마지막 수정 날짜 : 20.08.20
+       */
+        case "createCoupon":
+            http_response_code(200);
+
+            if($req->userId == null) {
+                $res->isSuccess = FALSE;
+                $res->code = 200;
+                $res->message = "아이디 값이 누락되었습니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                break;
+            }
+
+            if($req->price == null){
+                $res->isSuccess = FALSE;
+                $res->code = 300;
+                $res->message = "가격 값이 누락되었습니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                break;
+            }
+
+            if($req->coupon == null){
+                $res->isSuccess = FALSE;
+                $res->code = 400;
+                $res->message = "쿠폰 내용 값이 누락되었습니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                break;
+            }
+
+            $userIdx = getUserId($req->userId);
+
+            if($req->storeId ==  null){
+                createCoupon($userIdx['userIdx'], $req->price, $req->coupon, $req->endDate, 0);
+            }else{
+                $storeIdx = getStoreId($req->storeId);
+                createCoupon($userIdx['userIdx'], $req->price, $req->coupon, $req->endDate, $storeIdx['storeIdx']);
+            }
+
+            $res->isSuccess = TRUE;
+            $res->code = 100;
+            $res->message = "테스트 성공";
+            echo json_encode($res, JSON_NUMERIC_CHECK);
+            break;
         /*
         * API No. 20
         * API Name : User 보유 쿠폰 조회 API
