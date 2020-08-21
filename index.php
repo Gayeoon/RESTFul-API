@@ -43,6 +43,7 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
     $r->addRoute('POST', '/user/order', ['IndexController', 'createOrder']);
 
     $r->addRoute('PATCH', '/user/{user_id}/choose', ['IndexController', 'editChoose']);
+    $r->addRoute('PATCH', '/user/review/{review_idx}', ['IndexController', 'editUserReview']);
 
     /* ******************   Test   ****************** */
     $r->addRoute('GET', '/', ['IndexController', 'index']);

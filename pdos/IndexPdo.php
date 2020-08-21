@@ -565,6 +565,49 @@ function createChoose($userIdx, $storeIdx, $isDeleted)
 
 }
 
+// API NO. 24 User 리뷰 수정
+function editUserReview($reviewIdx, $temp, $flag)
+{
+    $pdo = pdoSqlConnect();
+
+    // flag = 0 : contents 수정
+    // flag = 1 : star 수정
+    if($flag == 0){
+        $query = "UPDATE Review SET contents = ?
+        WHERE reviewIdx = ?;";
+
+        $st = $pdo->prepare($query);
+        $st->execute([$temp, $reviewIdx]);
+    }
+
+    else if($flag == 1){
+        $query = "UPDATE Review SET star = ?
+        WHERE reviewIdx = ?;";
+
+        $st = $pdo->prepare($query);
+        $st->execute([$temp, $reviewIdx]);
+    }
+
+    $st = null;
+    $pdo = null;
+
+}
+
+// API NO. 24 User 리뷰 수정
+function deleteReviewPicture($reviewIdx)
+{
+    $pdo = pdoSqlConnect();
+
+    $query = "DELETE FROM ReviewPicture WHERE reviewIdx = ?";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$reviewIdx]);
+    $st = null;
+    $pdo = null;
+
+}
+
+
 // API NO. 28 가게 키워드 검색
 function getStoreWord($keyword)
 {
@@ -821,7 +864,7 @@ function checkMenu($storeIdx, $name)
     return intval($res[0]['exist']);
 }
 
-// OrderNumber 유효성 체크
+// ReviewIdx 유효성 체크
 function isValidReviewIdx($keyword)
 {
     $pdo = pdoSqlConnect();

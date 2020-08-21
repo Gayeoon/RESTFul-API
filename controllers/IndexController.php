@@ -844,6 +844,47 @@ try {
             break;
 
         /*
+        * API No. 24
+        * API Name : User 리뷰 수정 API
+        * 마지막 수정 날짜 : 20.08.21
+        */
+        case "editUserReview":
+            http_response_code(200);
+
+            $reviewIdx = $vars['review_idx'];
+
+            if(!isValidReviewIdx($reviewIdx)){
+                $res->isSuccess = FALSE;
+                $res->code = 200;
+                $res->message = "유효하지 않은 Review Idx입니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                break;
+            }
+
+            if($req -> contents != null){
+                editUserReview($reviewIdx, $req -> contents, 0);
+            }
+
+            if($req -> star != null){
+                editUserReview($reviewIdx, $req -> star, 1);
+            }
+
+            if($req->picture != null){
+                deleteReviewPicture($reviewIdx);
+
+                for($t=0; $t<sizeof($req->picture); $t++)
+                {
+                    createReviewPicture($reviewIdx, $req->picture[$t]);
+                }
+            }
+
+            $res->isSuccess = TRUE;
+            $res->code = 100;
+            $res->message = "정보 수정 성공";
+            echo json_encode($res, JSON_NUMERIC_CHECK);
+            break;
+
+        /*
         * API No. 28
         * API Name : 해당 단어가 포함되는 가게 검색 API
         * 마지막 수정 날짜 : 20.08.20
