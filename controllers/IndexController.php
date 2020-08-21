@@ -917,7 +917,7 @@ try {
 
         /*
         * API No. 26
-        * API Name : Store 메뉴 상태 변경 API
+        * API Name : Store 메뉴 상태 변경 API (품절)
         * 마지막 수정 날짜 : 20.08.21
         */
         case "editMenuPossible":
@@ -944,6 +944,32 @@ try {
             $res->message = "정보 수정 성공";
             echo json_encode($res, JSON_NUMERIC_CHECK);
             break;
+
+        /*
+        * API No. 27
+        * API Name : Store 메뉴 상태 변경 API (이미지)
+        * 마지막 수정 날짜 : 20.08.21
+        */
+        case "editMenuPicture":
+            http_response_code(200);
+
+            $menuNum = $vars['menu_num'];
+
+            if($req -> picture == null){
+                $res->isSuccess = FALSE;
+                $res->code = 200;
+                $res->message = "Picture 값이 누락되었습니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                break;
+            }
+
+            editMenuPicture($menuNum, $req->picture);
+            $res->isSuccess = TRUE;
+            $res->code = 100;
+            $res->message = "정보 수정 성공";
+            echo json_encode($res, JSON_NUMERIC_CHECK);
+            break;
+
 
         /*
         * API No. 28
@@ -1031,6 +1057,25 @@ try {
             $res->message = "정보 출력 성공";
             echo json_encode($res, JSON_NUMERIC_CHECK);
             break;
+			
+		/*
+        * API No. 31
+        * API Name : 회원 정보 삭제 API
+        * 마지막 수정 날짜 : 20.08.22
+        */
+        case "deleteUser":
+            http_response_code(200);
+
+            $userId = $vars['user_id'];
+
+            deleteUser($userId);
+
+            $res->isSuccess = TRUE;
+            $res->code = 100;
+            $res->message = "정보 삭제 성공";
+            echo json_encode($res, JSON_NUMERIC_CHECK);
+            break;
+
     }
 } catch (\Exception $e) {
     return getSQLErrorException($errorLogs, $e, $req);

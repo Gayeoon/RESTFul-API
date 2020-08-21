@@ -620,7 +620,7 @@ function editStoreOpen($storeIdx, $flag)
     $pdo = null;
 }
 
-// API NO. 26 Store 메뉴 상태 변경
+// API NO. 26 Store 메뉴 상태 변경(품절)
 function editMenuPossible($menuNum, $flag)
 {
     $pdo = pdoSqlConnect();
@@ -629,6 +629,19 @@ function editMenuPossible($menuNum, $flag)
 
     $st = $pdo->prepare($query);
     $st->execute([$flag, $menuNum]);
+    $st = null;
+    $pdo = null;
+}
+
+// API NO. 27 Store 메뉴 상태 변경(이미지)
+function editMenuPicture($menuNum, $image)
+{
+    $pdo = pdoSqlConnect();
+
+    $query = "UPDATE Menu SET picture = ? WHERE menuNum = ?;";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$image, $menuNum]);
     $st = null;
     $pdo = null;
 }
@@ -704,6 +717,19 @@ function getUserReviewDetail($keyword)
     }
 
     return $res;
+}
+
+// API NO. 31 회원 정보 삭제
+function deleteUser($userId)
+{
+    $pdo = pdoSqlConnect();
+
+    $query = "UPDATE User SET isDeleted = 'Y' WHERE userId = ?;";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$userId]);
+    $st = null;
+    $pdo = null;
 }
 
 // User Idx 가져오기
