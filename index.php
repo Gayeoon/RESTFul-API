@@ -35,7 +35,6 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
     $r->addRoute('GET', '/user/{user_id}/coupon', ['IndexController', 'getUserCoupon']);
     $r->addRoute('GET', '/user/{user_id}/order-cnt', ['IndexController', 'getUserOrderCount']);
 
-
     $r->addRoute('POST', '/user', ['IndexController', 'createUser']);
     $r->addRoute('POST', '/store', ['IndexController', 'createStore']);
     $r->addRoute('POST', '/store/menu', ['IndexController', 'createStoreMenu']);
@@ -43,10 +42,12 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
     $r->addRoute('POST', '/user/coupon', ['IndexController', 'createCoupon']);
     $r->addRoute('POST', '/user/order', ['IndexController', 'createOrder']);
 
+    $r->addRoute('PATCH', '/user/{user_id}/choose', ['IndexController', 'editChoose']);
+
     /* ******************   Test   ****************** */
     $r->addRoute('GET', '/', ['IndexController', 'index']);
    // $r->addRoute('GET', '/users', ['IndexController', 'getUsers']);
-    $r->addRoute('GET', '/users/{no}', ['IndexController', 'getUserDetail']);
+   // $r->addRoute('GET', '/users/{no}', ['IndexController', 'getUserDetail']);
     $r->addRoute('GET', '/jwt', ['MainController', 'validateJwt']);
     $r->addRoute('POST', '/jwt', ['MainController', 'createJwt']);
 

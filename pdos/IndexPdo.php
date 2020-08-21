@@ -533,6 +533,38 @@ function createOrderList($orderNum, $menuNum, $menuCnt, $menuOption)
 
 }
 
+// API NO. 23 User 가게 찜 / 취소
+function editChoose($userIdx, $storeIdx, $isDeleted)
+{
+    $pdo = pdoSqlConnect();
+
+    $query = "UPDATE Choose SET isDeleted = ?
+        WHERE userIdx = ? AND storeIdx = ?;";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$isDeleted, $userIdx, $storeIdx]);
+
+    $st = null;
+    $pdo = null;
+
+}
+
+// API NO. 23 User 가게 찜 생성
+function createChoose($userIdx, $storeIdx, $isDeleted)
+{
+    $pdo = pdoSqlConnect();
+
+    $query = "INSERT INTO Choose(userIdx, storeIdx, isDeleted)
+        VALUES (?, ?, ?);";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$userIdx, $storeIdx, $isDeleted]);
+
+    $st = null;
+    $pdo = null;
+
+}
+
 // API NO. 28 가게 키워드 검색
 function getStoreWord($keyword)
 {
@@ -624,6 +656,23 @@ function getStoreId($keyword)
     $pdo = null;
 
     return $res[0];
+}
+
+// choose 테이블에 있는지 확인
+function isChoosed($userIdx, $storeIdx)
+{
+    $pdo = pdoSqlConnect();
+    $query = "SELECT EXISTS (SELECT * FROM Choose WHERE userIdx = ? AND storeIdx = ?) AS exist;";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$userIdx, $storeIdx]);
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+
+    return intval($res[0]['exist']);
 }
 
 // Review Idx 가져오기

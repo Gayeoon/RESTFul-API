@@ -784,6 +784,66 @@ try {
             break;
 
         /*
+        * API No. 23
+        * API Name : User 가게 찜 / 찜 취소 API
+        * 마지막 수정 날짜 : 20.08.21
+        */
+        case "editChoose":
+            http_response_code(200);
+
+            $keyword = $vars['user_id'];
+
+            if(!isValidStoreId($req -> storeId)){
+                $res->isSuccess = FALSE;
+                $res->code = 200;
+                $res->message = "유효하지 않은 Store ID입니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                break;
+            }
+
+            $userIdx = getUserId($keyword)['userIdx'];
+            $storeIdx = getStoreId($req->storeId)['storeIdx'];
+
+            $ans = isChoosed($userIdx, $storeIdx);
+
+            if($req -> status == 0 && $ans == 0){
+                $res->isSuccess = FALSE;
+                $res->code = 300;
+                $res->message = "찜이 되어있지 않는 Store ID입니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                break;
+            }
+
+            if($req -> status == 0 && $ans == 1){
+                editChoose($userIdx, $storeIdx, 'Y');
+                $res->isSuccess = TRUE;
+                $res->code = 100;
+                $res->message = "정보 수정 성공";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                break;
+            }
+
+            if($req -> status == 1 && $ans == 1){
+                editChoose($userIdx, $storeIdx, 'N');
+                $res->isSuccess = TRUE;
+                $res->code = 100;
+                $res->message = "정보 수정 성공";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                break;
+            }
+
+            if($req -> status == 1 && $ans == 0){
+                createChoose($userIdx, $storeIdx, 'N');
+                $res->isSuccess = TRUE;
+                $res->code = 100;
+                $res->message = "정보 수정 성공";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                break;
+            }
+
+            break;
+
+        /*
         * API No. 28
         * API Name : 해당 단어가 포함되는 가게 검색 API
         * 마지막 수정 날짜 : 20.08.20
