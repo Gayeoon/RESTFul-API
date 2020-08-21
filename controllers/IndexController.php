@@ -885,6 +885,37 @@ try {
             break;
 
         /*
+        * API No. 25
+        * API Name : Store 오픈 상태 변경 API
+        * 마지막 수정 날짜 : 20.08.21
+        */
+        case "editStoreOpen":
+            http_response_code(200);
+
+            $storeId = $vars['store_id'];
+            $storeIdx = getStoreId($storeId)['storeIdx'];
+
+            if($req -> isOpen != 0 && $req -> isOpen == null){
+                $res->isSuccess = FALSE;
+                $res->code = 200;
+                $res->message = "Open 상태가 누락되었습니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                break;
+            }
+
+            $temp = 'N';
+            if($req -> isOpen == 0){
+                $temp = 'Y';
+            }
+
+            editStoreOpen($storeIdx, $temp);
+            $res->isSuccess = TRUE;
+            $res->code = 100;
+            $res->message = "정보 수정 성공";
+            echo json_encode($res, JSON_NUMERIC_CHECK);
+            break;
+
+        /*
         * API No. 28
         * API Name : User 쿠폰 사용 API
         * 마지막 수정 날짜 : 20.08.21

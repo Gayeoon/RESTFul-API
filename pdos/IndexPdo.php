@@ -607,6 +607,19 @@ function deleteReviewPicture($reviewIdx)
 
 }
 
+// API NO. 25 Store 오픈 상태 변경
+function editStoreOpen($storeIdx, $flag)
+{
+    $pdo = pdoSqlConnect();
+
+    $query = "UPDATE Store SET isOpen = ? WHERE storeIdx = ?;";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$flag, $storeIdx]);
+    $st = null;
+    $pdo = null;
+}
+
 // API NO. 28 User 쿠폰 사용
 function useCoupon($couponIdx)
 {
