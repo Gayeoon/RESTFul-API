@@ -916,6 +916,36 @@ try {
             break;
 
         /*
+        * API No. 26
+        * API Name : Store 메뉴 상태 변경 API
+        * 마지막 수정 날짜 : 20.08.21
+        */
+        case "editMenuPossible":
+            http_response_code(200);
+
+            $menuNum = $vars['menu_num'];
+
+            if($req -> isPossible != 0 && $req -> isPossible == null){
+                $res->isSuccess = FALSE;
+                $res->code = 200;
+                $res->message = "Possible 상태가 누락되었습니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                break;
+            }
+
+            $temp = 'N';
+            if($req -> isPossible == 0){
+                $temp = 'Y';
+            }
+
+            editMenuPossible($menuNum, $temp);
+            $res->isSuccess = TRUE;
+            $res->code = 100;
+            $res->message = "정보 수정 성공";
+            echo json_encode($res, JSON_NUMERIC_CHECK);
+            break;
+
+        /*
         * API No. 28
         * API Name : User 쿠폰 사용 API
         * 마지막 수정 날짜 : 20.08.21

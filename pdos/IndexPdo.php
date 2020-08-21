@@ -620,6 +620,19 @@ function editStoreOpen($storeIdx, $flag)
     $pdo = null;
 }
 
+// API NO. 26 Store 메뉴 상태 변경
+function editMenuPossible($menuNum, $flag)
+{
+    $pdo = pdoSqlConnect();
+
+    $query = "UPDATE Menu SET isPossible = ? WHERE menuNum = ?;";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$flag, $menuNum]);
+    $st = null;
+    $pdo = null;
+}
+
 // API NO. 28 User 쿠폰 사용
 function useCoupon($couponIdx)
 {

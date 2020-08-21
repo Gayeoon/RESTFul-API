@@ -46,7 +46,7 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
     $r->addRoute('PATCH', '/user/review/{review_idx}', ['IndexController', 'editUserReview']);
     $r->addRoute('PATCH', '/user/coupon/{coupon_idx}', ['IndexController', 'useCoupon']);
     $r->addRoute('PATCH', '/store/{store_id}/is-open', ['IndexController', 'editStoreOpen']);
-
+    $r->addRoute('PATCH', '/store/{menu_num}/menu/possible', ['IndexController', 'editMenuPossible']);
 
     /* ******************   Test   ****************** */
     $r->addRoute('GET', '/', ['IndexController', 'index']);
