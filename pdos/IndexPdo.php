@@ -607,8 +607,21 @@ function deleteReviewPicture($reviewIdx)
 
 }
 
+// API NO. 28 User 쿠폰 사용
+function useCoupon($couponIdx)
+{
+    $pdo = pdoSqlConnect();
 
-// API NO. 28 가게 키워드 검색
+    $query = "UPDATE Coupon SET isUsed = 'Y' WHERE couponIdx = ?;";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$couponIdx]);
+    $st = null;
+    $pdo = null;
+
+}
+
+// API NO. 29 가게 키워드 검색
 function getStoreWord($keyword)
 {
     $pdo = pdoSqlConnect();
@@ -628,7 +641,7 @@ function getStoreWord($keyword)
     return $res;
 }
 
-// API NO. 29 User 리뷰 상세 조회
+// API NO. 30 User 리뷰 상세 조회
 function getUserReviewDetail($keyword)
 {
     $pdo = pdoSqlConnect();
@@ -880,6 +893,42 @@ function isValidReviewIdx($keyword)
     $pdo = null;
     //echo json_encode($res);
     return intval($res[0]['exist']);
+}
+
+// CouponIdx 유효성 체크
+function isValidCouponIdx($keyword)
+{
+    $pdo = pdoSqlConnect();
+    $query = "SELECT EXISTS (SELECT * FROM Coupon WHERE couponIdx = ? AND isUsed = 'N' AND TIMESTAMPDIFF(DAY, endDate, NOW()) < 1) AS exist;";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$keyword]);
+    //    $st->execute();
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+    //echo json_encode($res);
+    return intval($res[0]['exist']);
+}
+
+// CouponIdx 사용 가능 가게 유효성 체크
+function getCouponStore($keyword)
+{
+    $pdo = pdoSqlConnect();
+    $query = "SELECT storeIdx FROM Coupon WHERE couponIdx = ?;";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$keyword]);
+    //    $st->execute();
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+    //echo json_encode($res);
+    return intval($res[0]['storeIdx']);
 }
 
 // OrderNumber 인덱스 찾기

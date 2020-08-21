@@ -886,6 +886,43 @@ try {
 
         /*
         * API No. 28
+        * API Name : User 쿠폰 사용 API
+        * 마지막 수정 날짜 : 20.08.21
+        */
+        case "useCoupon":
+            http_response_code(200);
+
+            $couponIdx = $vars['coupon_idx'];
+
+            if(!isValidCouponIdx($couponIdx)){
+                $res->isSuccess = FALSE;
+                $res->code = 200;
+                $res->message = "유효하지 않은 쿠폰입니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                break;
+            }
+
+            $ans = getCouponStore($couponIdx);
+            $storeIdx = getStoreId($req->storeId)['storeIdx'];
+
+            if($ans != 0 && $ans != $storeIdx){
+                $res->isSuccess = FALSE;
+                $res->code = 300;
+                $res->message = "해당 가게에서는 쿠폰을 사용하실 수 없습니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                break;
+            }
+
+
+            useCoupon($couponIdx);
+            $res->isSuccess = TRUE;
+            $res->code = 100;
+            $res->message = "정보 수정 성공";
+            echo json_encode($res, JSON_NUMERIC_CHECK);
+            break;
+
+        /*
+        * API No. 29
         * API Name : 해당 단어가 포함되는 가게 검색 API
         * 마지막 수정 날짜 : 20.08.20
         */
@@ -911,7 +948,7 @@ try {
 
 
         /*
-        * API No. 29
+        * API No. 30
         * API Name : User 리뷰 목록 조회 API
         * 마지막 수정 날짜 : 20.08.17
         */
