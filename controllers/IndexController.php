@@ -737,6 +737,53 @@ try {
             break;
 
         /*
+       * API No. 22
+       * API Name : User 음식 주문 API
+       * 마지막 수정 날짜 : 20.08.20
+       */
+        case "createOrder":
+            http_response_code(200);
+
+            if($req->userId == null) {
+                $res->isSuccess = FALSE;
+                $res->code = 200;
+                $res->message = "User 아이디 값이 누락되었습니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                break;
+            }
+
+            if($req->storeId == null) {
+                $res->isSuccess = FALSE;
+                $res->code = 200;
+                $res->message = "Store 아이디 값이 누락되었습니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                break;
+            }
+
+            $userIdx = getUserId($req->userId);
+            $storeIdx = getStoreId($req->storeId);
+
+            $toStoreMemo = $req->toStoreMemo;
+            if($req->toStoreMemo == null)
+                $toStoreMemo = "(없음)";
+
+            createOrder($userIdx['userIdx'],  $storeIdx['storeIdx'], $req->address, $req->number, $toStoreMemo, $req->toRiderMemo, $req->payment, $req->type);
+
+            $orderNum = findOrderNum();
+
+             for($t=0; $t<sizeof($req->menuNum); $t++)
+                {
+                    createOrderList($orderNum, $req->menuNum[$t], $req->menuCnt[$t], $req->menuOption[$t]);
+                }
+
+
+            $res->isSuccess = TRUE;
+            $res->code = 100;
+            $res->message = "테스트 성공";
+            echo json_encode($res, JSON_NUMERIC_CHECK);
+            break;
+
+        /*
         * API No. 28
         * API Name : 해당 단어가 포함되는 가게 검색 API
         * 마지막 수정 날짜 : 20.08.20

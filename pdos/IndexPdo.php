@@ -222,16 +222,16 @@ function getUserOrder($keyword)
                     ELSE CONCAT(date_format(OrderMenu.date,'%m/%d'), '(', SUBSTR( _UTF8'일월화수목금토', DAYOFWEEK(OrderMenu.date), 1),')')
             END AS date,
             Store.category, Store.name, OrderMenu.isReview, CONCAT(FORMAT(Store.tip , 0), '원') AS tip,
-                   GROUP_CONCAT(Menu.name) AS menuName, CONCAT(FORMAT(SUM(Menu.price) , 0), '원') AS menuPrice, Store.storeId, OrderMenu.orderNumber, OrderMenu.orderIdx
+                   GROUP_CONCAT(Menu.name) AS menuName, CONCAT(FORMAT(SUM(Menu.price) , 0), '원') AS menuPrice, Store.storeId, OrderMenu.orderNumber
             FROM OrderMenu
-            JOIN User on User.userId = 'judy'
+            JOIN User on User.userId = ?
             JOIN  Store
             ON OrderMenu.userIdx = User.userIdx AND OrderMenu.type <= 1 AND OrderMenu.storeIdx = Store.storeIdx
             JOIN  OrderMenuList
             ON OrderMenu.orderNumber = OrderMenuList.orderNumber
             JOIN  Menu
             ON Menu.menuNum = OrderMenuList.menuNum
-            GROUP BY OrderMenu.date, OrderMenu.orderIdx
+            GROUP BY OrderMenu.date, OrderMenu.orderNumber
             ORDER BY OrderMenu.date DESC ;";
 
     $st = $pdo->prepare($query);
@@ -502,6 +502,37 @@ function getUserOrderCount($keyword)
     return $res[0];
 }
 
+// API NO. 22 User 음식주문
+function createOrder($userIdx, $storeIdx, $address, $number, $toStoreMemo, $toRiderMemo, $payment, $type)
+{
+    $pdo = pdoSqlConnect();
+
+    $query = "INSERT INTO OrderMenu(userIdx, storeIdx, address, number, toStoreMemo, toRiderMemo, payment, isDelivered, isReview, type, isDeleted)
+        VALUES (?,?,?,?,?,?,?,'N','Y',?,'N');";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$userIdx, $storeIdx, $address, $number, $toStoreMemo, $toRiderMemo, $payment, $type]);
+
+    $st = null;
+    $pdo = null;
+}
+
+// API NO. 22 User 음식주문 - 메뉴 추가
+function createOrderList($orderNum, $menuNum, $menuCnt, $menuOption)
+{
+    $pdo = pdoSqlConnect();
+
+    $query = "INSERT INTO OrderMenuList(orderNumber, menuNum, menuCnt, menuOption)
+        VALUES (?, ?, ?, ?);";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$orderNum, $menuNum, $menuCnt, $menuOption]);
+
+    $st = null;
+    $pdo = null;
+
+}
+
 // API NO. 28 가게 키워드 검색
 function getStoreWord($keyword)
 {
@@ -614,7 +645,7 @@ function getReviewIdx($orderNum)
     return $res[0];
 }
 
-// Review Idx 가져오기
+// OrderNumber로 user 정보 가져오기
 function getOrderNum($orderNum)
 {
     $pdo = pdoSqlConnect();
@@ -757,6 +788,24 @@ function isValidReviewIdx($keyword)
     $pdo = null;
     //echo json_encode($res);
     return intval($res[0]['exist']);
+}
+
+// OrderNumber 인덱스 찾기
+function findOrderNum()
+{
+    $pdo = pdoSqlConnect();
+    $query = "SELECT MAX(orderNumber) AS orderNumber From OrderMenu";
+
+    $st = $pdo->prepare($query);
+    $st->execute([]);
+    //    $st->execute();
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+    //echo json_encode($res);
+    return intval($res[0]['orderNumber']);
 }
 
 //// Test
