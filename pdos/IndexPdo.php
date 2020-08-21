@@ -732,6 +732,19 @@ function deleteUser($userId)
     $pdo = null;
 }
 
+// API NO. 32 가게 정보 삭제
+function deleteStore($storeId)
+{
+    $pdo = pdoSqlConnect();
+
+    $query = "UPDATE Store SET isDeleted = 'Y' WHERE storeId = ?;";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$storeId]);
+    $st = null;
+    $pdo = null;
+}
+
 // User Idx 가져오기
 function getUserId($keyword)
 {

@@ -50,7 +50,8 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
     $r->addRoute('PATCH', '/store/{menu_num}/menu/picture', ['IndexController', 'editMenuPicture']);
 
 	$r->addRoute('DELETE', '/user/{user_id}', ['IndexController', 'deleteUser']);
-
+	$r->addRoute('DELETE', '/store/{store_id}', ['IndexController', 'deleteStore']);
+	
     /* ******************   Test   ****************** */
     $r->addRoute('GET', '/', ['IndexController', 'index']);
    // $r->addRoute('GET', '/users', ['IndexController', 'getUsers']);

@@ -1076,6 +1076,24 @@ try {
             echo json_encode($res, JSON_NUMERIC_CHECK);
             break;
 
+		/*
+        * API No. 32
+        * API Name : 가게 정보 삭제 API
+        * 마지막 수정 날짜 : 20.08.22
+        */
+        case "deleteStore":
+            http_response_code(200);
+
+            $storeId = $vars['store_id'];
+
+            deleteStore($storeId);
+
+            $res->isSuccess = TRUE;
+            $res->code = 100;
+            $res->message = "정보 삭제 성공";
+            echo json_encode($res, JSON_NUMERIC_CHECK);
+            break;
+			
     }
 } catch (\Exception $e) {
     return getSQLErrorException($errorLogs, $e, $req);
