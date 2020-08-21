@@ -1120,6 +1120,31 @@ try {
             echo json_encode($res, JSON_NUMERIC_CHECK);
             break;
 			
+		/*
+        * API No. 34
+        * API Name : User 주문내역 삭제 API
+        * 마지막 수정 날짜 : 20.08.22
+        */
+        case "deleteUserOrder":
+            http_response_code(200);
+
+            $order_num = $vars['order_num'];
+
+            if(!isCheckOrderNum($order_num)){
+                $res->isSuccess = FALSE;
+                $res->code = 200;
+                $res->message = "유효하지 않은 Order Number 입니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                break;
+            }
+
+            deleteUserOrder($order_num);
+
+            $res->isSuccess = TRUE;
+            $res->code = 100;
+            $res->message = "정보 삭제 성공";
+            echo json_encode($res, JSON_NUMERIC_CHECK);
+            break;
     }
 } catch (\Exception $e) {
     return getSQLErrorException($errorLogs, $e, $req);

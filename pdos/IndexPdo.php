@@ -758,6 +758,19 @@ function deleteUserReview($review_idx)
     $pdo = null;
 }
 
+// API NO. 34 회원 주문내역 삭제
+function deleteUserOrder($order_num)
+{
+    $pdo = pdoSqlConnect();
+
+    $query = "UPDATE OrderMenu SET isDeleted = 'Y' WHERE orderNumber = ?;";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$order_num]);
+    $st = null;
+    $pdo = null;
+}
+
 // User Idx 가져오기
 function getUserId($keyword)
 {
