@@ -1057,8 +1057,8 @@ try {
             $res->message = "정보 출력 성공";
             echo json_encode($res, JSON_NUMERIC_CHECK);
             break;
-			
-		/*
+
+        /*
         * API No. 31
         * API Name : 회원 정보 삭제 API
         * 마지막 수정 날짜 : 20.08.22
@@ -1076,7 +1076,7 @@ try {
             echo json_encode($res, JSON_NUMERIC_CHECK);
             break;
 
-		/*
+        /*
         * API No. 32
         * API Name : 가게 정보 삭제 API
         * 마지막 수정 날짜 : 20.08.22
@@ -1093,8 +1093,8 @@ try {
             $res->message = "정보 삭제 성공";
             echo json_encode($res, JSON_NUMERIC_CHECK);
             break;
-		
-		/*
+
+        /*
         * API No. 33
         * API Name : User 리뷰 삭제 API
         * 마지막 수정 날짜 : 20.08.22
@@ -1119,8 +1119,8 @@ try {
             $res->message = "정보 삭제 성공";
             echo json_encode($res, JSON_NUMERIC_CHECK);
             break;
-			
-		/*
+
+        /*
         * API No. 34
         * API Name : User 주문내역 삭제 API
         * 마지막 수정 날짜 : 20.08.22
@@ -1145,6 +1145,33 @@ try {
             $res->message = "정보 삭제 성공";
             echo json_encode($res, JSON_NUMERIC_CHECK);
             break;
+
+        /*
+        * API No. 35
+        * API Name : Store 메뉴 삭제 API
+        * 마지막 수정 날짜 : 20.08.22
+        */
+        case "deleteStoreMenu":
+            http_response_code(200);
+
+            $menu_num = $vars['menu_num'];
+
+            if(!isValidMenuNum($menu_num)){
+                $res->isSuccess = FALSE;
+                $res->code = 200;
+                $res->message = "유효하지 않은 Menu Number 입니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                break;
+            }
+
+            deleteStoreMenu($menu_num);
+
+            $res->isSuccess = TRUE;
+            $res->code = 100;
+            $res->message = "정보 삭제 성공";
+            echo json_encode($res, JSON_NUMERIC_CHECK);
+            break;
+
     }
 } catch (\Exception $e) {
     return getSQLErrorException($errorLogs, $e, $req);

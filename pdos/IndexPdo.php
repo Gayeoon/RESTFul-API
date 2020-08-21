@@ -197,7 +197,8 @@ function getStoreMenu($keyword)
     $query = "SELECT Menu.Name AS menuName, CONCAT(FORMAT(Menu.price , 0), '원') AS price, Menu.picture, Menu.isPossible, Menu.menuNum
         FROM Menu
         JOIN  Store
-        ON Store.storeID = 'mmmm' AND Menu.storeIdx = Store.storeIdx;";
+        ON Store.storeID = 'mmmm' AND Menu.storeIdx = Store.storeIdx
+        WHERE Menu.isDeleted = 'N';";
 
     $st = $pdo->prepare($query);
     $st->execute([$keyword]);
@@ -231,6 +232,7 @@ function getUserOrder($keyword)
             ON OrderMenu.orderNumber = OrderMenuList.orderNumber
             JOIN  Menu
             ON Menu.menuNum = OrderMenuList.menuNum
+            WHERE OrderMenu.isDeleted = 'N'
             GROUP BY OrderMenu.date, OrderMenu.orderNumber
             ORDER BY OrderMenu.date DESC ;";
 
@@ -258,7 +260,8 @@ function getUserOrderDetail($keyword)
         OrderMenu.orderNumber,  Store.name, CONCAT(FORMAT(Store.tip , 0), '원') AS tip, OrderMenu.isDelivered, Store.phone, OrderMenu.payment, OrderMenu.address, Store.storeId
         FROM OrderMenu
         JOIN  Store
-        ON OrderMenu.orderNumber = ? AND OrderMenu.storeIdx = Store.storeIdx;";
+        ON OrderMenu.orderNumber = ? AND OrderMenu.storeIdx = Store.storeIdx
+        WHERE OrderMenu.isDeleted = 'N';";
 
     $st = $pdo->prepare($query);
     $st->execute([$keyword]);
@@ -268,12 +271,13 @@ function getUserOrderDetail($keyword)
     $st = null;
     $pdo = null;
 
-    $res = array_filter($res[0]);
+    if($res != null)
+        $res = array_filter($res[0]);
     return $res;
 }
 
 // API NO. 12 User 주문 내역 메뉴 정보 조회
-function getUserOrderMenu($keyword)
+function getUserOrderMenu($userId)
 {
     $pdo = pdoSqlConnect();
 
@@ -281,12 +285,13 @@ function getUserOrderMenu($keyword)
         FROM OrderMenu
         JOIN User on User.userId = ?
         JOIN  OrderMenuList
-        ON OrderMenu.userIdx = User.userIdx AND OrderMenu.orderNumber = 'B0QE01AX5S' AND OrderMenuList.orderNumber = OrderMenu.orderNumber
+        ON OrderMenu.userIdx = User.userIdx AND OrderMenuList.orderNumber = OrderMenu.orderNumber
         JOIN  Menu
-        ON Menu.menuNum = OrderMenuList.menuNum;";
+        ON Menu.menuNum = OrderMenuList.menuNum
+        WHERE OrderMenu.isDeleted = 'N';";
 
     $st = $pdo->prepare($query);
-    $st->execute([$keyword]);
+    $st->execute([$userId]);
     $st->setFetchMode(PDO::FETCH_ASSOC);
     $res = $st->fetchAll();
 
@@ -771,6 +776,19 @@ function deleteUserOrder($order_num)
     $pdo = null;
 }
 
+// API NO. 35 가게 메뉴 삭제
+function deleteStoreMenu($menu_num)
+{
+    $pdo = pdoSqlConnect();
+
+    $query = "UPDATE Menu SET isDeleted = 'Y' WHERE menuNum = ?;";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$menu_num]);
+    $st = null;
+    $pdo = null;
+}
+
 // User Idx 가져오기
 function getUserId($keyword)
 {
@@ -860,11 +878,47 @@ function getOrderNum($orderNum)
     return $res[0];
 }
 
-// ID 체크
+// OrderNumber
 function isValidOrderNum($keyword)
 {
     $pdo = pdoSqlConnect();
     $query = "SELECT EXISTS (SELECT * FROM Review WHERE orderNumber = ? AND isDeleted = 'N') AS exist;";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$keyword]);
+    //    $st->execute();
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+    //echo json_encode($res);
+    return intval($res[0]['exist']);
+}
+
+// OrderNumber 유효성 체크
+function isCheckOrderNum($keyword)
+{
+    $pdo = pdoSqlConnect();
+    $query = "SELECT EXISTS (SELECT * FROM OrderMenu WHERE orderNumber = ? AND isDeleted = 'N') AS exist;";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$keyword]);
+    //    $st->execute();
+    $st->setFetchMode(PDO::FETCH_ASSOC);
+    $res = $st->fetchAll();
+
+    $st = null;
+    $pdo = null;
+    //echo json_encode($res);
+    return intval($res[0]['exist']);
+}
+
+// Menu Number 유효성 체크
+function isValidMenuNum($keyword)
+{
+    $pdo = pdoSqlConnect();
+    $query = "SELECT EXISTS (SELECT * FROM Menu WHERE menuNum = ? AND isDeleted = 'N') AS exist;";
 
     $st = $pdo->prepare($query);
     $st->execute([$keyword]);
