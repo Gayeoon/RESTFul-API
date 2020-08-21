@@ -745,6 +745,19 @@ function deleteStore($storeId)
     $pdo = null;
 }
 
+// API NO. 33 회원 리뷰 삭제
+function deleteUserReview($review_idx)
+{
+    $pdo = pdoSqlConnect();
+
+    $query = "UPDATE Review SET isDeleted = 'Y' WHERE reviewIdx = ?;";
+
+    $st = $pdo->prepare($query);
+    $st->execute([$review_idx]);
+    $st = null;
+    $pdo = null;
+}
+
 // User Idx 가져오기
 function getUserId($keyword)
 {

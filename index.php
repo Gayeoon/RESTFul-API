@@ -51,6 +51,8 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
 
 	$r->addRoute('DELETE', '/user/{user_id}', ['IndexController', 'deleteUser']);
 	$r->addRoute('DELETE', '/store/{store_id}', ['IndexController', 'deleteStore']);
+	$r->addRoute('DELETE', '/user/review/{review_idx}', ['IndexController', 'deleteUserReview']);
+	
 	
     /* ******************   Test   ****************** */
     $r->addRoute('GET', '/', ['IndexController', 'index']);

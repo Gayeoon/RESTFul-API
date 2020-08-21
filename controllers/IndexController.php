@@ -1093,6 +1093,32 @@ try {
             $res->message = "정보 삭제 성공";
             echo json_encode($res, JSON_NUMERIC_CHECK);
             break;
+		
+		/*
+        * API No. 33
+        * API Name : User 리뷰 삭제 API
+        * 마지막 수정 날짜 : 20.08.22
+        */
+        case "deleteUserReview":
+            http_response_code(200);
+
+            $review_idx = $vars['review_idx'];
+
+            if(!isValidReviewIdx($review_idx)){
+                $res->isSuccess = FALSE;
+                $res->code = 200;
+                $res->message = "유효하지 않은 Review Idx입니다.";
+                echo json_encode($res, JSON_NUMERIC_CHECK);
+                break;
+            }
+
+            deleteUserReview($review_idx);
+
+            $res->isSuccess = TRUE;
+            $res->code = 100;
+            $res->message = "정보 삭제 성공";
+            echo json_encode($res, JSON_NUMERIC_CHECK);
+            break;
 			
     }
 } catch (\Exception $e) {
