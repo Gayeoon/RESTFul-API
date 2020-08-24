@@ -10,7 +10,9 @@ try {
  //   addAccessLogs($accessLogs, $req);
     switch ($handler) {
         case "index":
-            echo "This is Gayeon's API Server";
+
+            echo("<script>location.href='/GayeonMusic/main.html';</script>");
+
             break;
         case "ACCESS_LOGS":
             //            header('content-type text/html charset=utf-8');
